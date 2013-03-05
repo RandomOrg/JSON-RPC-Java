@@ -1,4 +1,4 @@
-package org.random.rpc;
+package org.random.api;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

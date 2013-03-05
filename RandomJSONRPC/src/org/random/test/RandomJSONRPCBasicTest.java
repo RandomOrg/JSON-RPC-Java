@@ -6,7 +6,7 @@ import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.random.rpc.RandomJSONRPC;
+import org.random.api.RandomJSONRPC;
 
 /**
  * A set of tests for RandomJSONRPC.java
