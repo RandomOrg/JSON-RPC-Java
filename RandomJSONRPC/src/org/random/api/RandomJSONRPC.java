@@ -311,7 +311,7 @@ public class RandomJSONRPC {
 	 * since the Android platform disallows networking to be done on the main thread.
 	 * @return The JSON response object from random.org
 	 */
-	protected void sendRequest(){
+	private void sendRequest(){
 		mJSONResponse = null;
 		long timeSinceLastRequest = System.currentTimeMillis() - mLastResponseReceived;
 		long waitingTime = mAdvisoryDelay - timeSinceLastRequest;
