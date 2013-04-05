@@ -39,7 +39,7 @@ public class RandomJSONRPC {
 	/** The default value for the optional replacement parameter */
 	private final boolean REPLACEMENT_DEFAULT = true;
 	private final int ONE_HOUR_IN_MILLIS = 3600000;
-
+	
 	private String mApiKey;
 	private long mMaxBlockingTime = 3000;
 	/** The request object to be sent to the server */
@@ -52,17 +52,16 @@ public class RandomJSONRPC {
 	private long mLastResponseReceived;
 	/** The advisory delay given by the random.org server */
 	private long mAdvisoryDelay = 0;
-
-
+	
+	
 	/**
 	 * Creates a new RandomJSONRPC object with the given api key
 	 * @param apiKey The api Key from random.org
 	 */
 	public RandomJSONRPC(String apiKey){
 		mApiKey = apiKey;		
-		mJSONResponse = null;				
 	}
-
+	
 	/**
 	 * Creates a new RandomJSONRPC object with the given api key and the maximum time the user wants to wait for the server.
 	 * @param apiKey The api key from random.org
@@ -72,9 +71,9 @@ public class RandomJSONRPC {
 	 */
 	public RandomJSONRPC(String apiKey, long maxBlockingTime){
 		mApiKey = apiKey;
-		mMaxBlockingTime = maxBlockingTime;
+		mMaxBlockingTime = maxBlockingTime;		
 	}
-
+	
 	/** <p><b> public int[] generateIntegers (int n, int min, int max) </b><p>
 	 * Calls <code> generateIntegers(int n, int min, int max, true, 10) </code>
 	 * @param n How many random integers are needed. Must be within the [1,1e4] range. 
@@ -85,7 +84,7 @@ public class RandomJSONRPC {
 	public int[] generateIntegers (int n, int min, int max) {
 		return generateIntegers(n, min, max, REPLACEMENT_DEFAULT);
 	}
-
+		
 	/**
 	 * <p><b> public int[] generateIntegers (int n, int min, int max, boolean replacement, int base) </b><p>
 	 * Generates true random integers within a user-defined range.
@@ -104,7 +103,7 @@ public class RandomJSONRPC {
 		sendRequest();			
 		return extractInts();
 	}
-
+	
 	/** 
 	 * <p><b> public double[] generateDecimalFractions(int n, int decimalPlaces) </b><p>
 	 * Calls <code> generateDecimalFractions(int n, int decimalPlaces, true) </code>
@@ -115,7 +114,7 @@ public class RandomJSONRPC {
 	public double[] generateDecimalFractions(int n, int decimalPlaces) {
 		return generateDecimalFractions(n, decimalPlaces, true);
 	}
-
+		
 	/**
 	 * <p><b> public double[] generateDecimalFractions(int n, int decimalPlaces, boolean replacement) </b><p>
 	 * Generates true random decimal fractions from a uniform distribution across the [0,1] interval with a user-defined number of decimal places.
@@ -132,7 +131,7 @@ public class RandomJSONRPC {
 		sendRequest();
 		return extractDoubles();
 	}
-
+	
 	/**
 	 * <p><b> public double[] generateGaussians(int n, double mean, double standardDeviation, int significantDigits) </b><p>
 	 * Generates true random numbers from a Gaussian distribution (also known as a normal distribution). 
@@ -149,7 +148,7 @@ public class RandomJSONRPC {
 		sendRequest();
 		return extractDoubles();
 	}
-
+	
 	/** 
 	 * <p><b> public String[] generateStrings(int n, String characters) </b><p>
 	 * Calls <code> generateStrings(int n, int decimalPlaces, true) </code>
@@ -161,7 +160,7 @@ public class RandomJSONRPC {
 	public String[] generateStrings(int n, int length, String characters) {
 		return generateStrings(n, length, characters, true);
 	}
-
+	
 	/**
 	 * <p><b> public String[] generateStrings(int n, int length, String characters, boolean replacement) </b><p>
 	 * Generates true random strings. 
@@ -179,7 +178,7 @@ public class RandomJSONRPC {
 		sendRequest();
 		return extractStrings();
 	}
-
+	
 	/**
 	 * <p><b> public UUID[] generateUUIDs(int n) </b><p>
 	 * Generates version 4 true random Universally Unique IDentifiers (UUIDs) in accordance with section 4.4 of RFC 4122. 
@@ -192,7 +191,7 @@ public class RandomJSONRPC {
 		sendRequest();
 		return extractUUIDs();
 	}
-
+		
 	/**
 	 * <p><b> public int getRequestsLeft() </b><p>
 	 * Returns the number of requests left on the quota
@@ -204,7 +203,7 @@ public class RandomJSONRPC {
 		JsonObject resultObject = (JsonObject) mJSONResponse.get("result");
 		return resultObject.get("requestsLeft").getAsInt();  
 	}
-
+	
 	/**
 	 * <p><b> public int getBitsLeft() </b><p>
 	 * Returns the number of bits left on the quota
@@ -216,7 +215,7 @@ public class RandomJSONRPC {
 		JsonObject resultObject = (JsonObject) mJSONResponse.get("result");
 		return resultObject.get("bitsLeft").getAsInt();
 	}
-
+	
 	private JsonObject getUsage(){
 		mJSONParams = new JsonObject();
 		mJSONParams.addProperty("apiKey", mApiKey);
@@ -224,7 +223,7 @@ public class RandomJSONRPC {
 		sendRequest();
 		return mJSONResponse;
 	}
-
+	
 	/**
 	 * Initialise the parameters to put in the JSON request object for integer generation
 	 * @return An initialised JSON object holding the parameters necessary to generate integers 
@@ -238,7 +237,7 @@ public class RandomJSONRPC {
 		mJSONParams.addProperty("replacement", replacement);
 		return mJSONParams;
 	}
-
+	
 	/**
 	 * Initialise the parameters to put in the JSON request object for decimal fraction generation
 	 * @return An initialised JSON object holding the parameters necessary to generate decimal fractions
@@ -250,7 +249,7 @@ public class RandomJSONRPC {
 		mJSONParams.addProperty("replacement", replacement);
 		return mJSONParams;
 	}
-
+	
 	/**
 	 * Initialise the parameters to put in the JSON request object for Gaussian generation
 	 * @return An initialised JSON object holding the parameters necessary to generate Gaussians
@@ -264,7 +263,7 @@ public class RandomJSONRPC {
 		mJSONParams.addProperty("significantDigits", significantDigits);
 		return mJSONParams;
 	}
-
+	
 	/**
 	 * Initialise the parameters to put in the JSON request object for string generation
 	 * @return An initialised JSON object holding the parameters necessary to generate strings
@@ -278,7 +277,7 @@ public class RandomJSONRPC {
 		mJSONParams.addProperty("replacement", replacement);
 		return mJSONParams;
 	}
-
+	
 	/**
 	 * Initialise the parameters to put in the JSON request object for UUID generation
 	 * @return An initialised JSON object holding the parameters necessary to generate UUIDs
@@ -289,7 +288,7 @@ public class RandomJSONRPC {
 		mJSONParams.addProperty("n", n);
 		return mJSONParams;
 	}
-
+	
 	/**
 	 * Initialise the JSON object representing the request to be sent over the network
 	 * @param method The name of the method to be invoked on the server
@@ -303,7 +302,7 @@ public class RandomJSONRPC {
 		mJSONRequest.addProperty("id", new Random().nextInt()); 		
 		return mJSONRequest;
 	}
-
+	
 	/**
 	 * Wait for advisory delay and make the call to the method that does the actual networking. 
 	 * This call is done in it's own runnable to avoid networking on the main thread. 
@@ -313,6 +312,7 @@ public class RandomJSONRPC {
 	 * @return The JSON response object from random.org
 	 */
 	protected void sendRequest(){
+		mJSONResponse = null;
 		long timeSinceLastRequest = System.currentTimeMillis() - mLastResponseReceived;
 		long waitingTime = mAdvisoryDelay - timeSinceLastRequest;
 		if (waitingTime > 0){
@@ -353,7 +353,7 @@ public class RandomJSONRPC {
 		if(((JsonObject) mJSONResponse.get("result")).has("advisoryDelay"))
 			mLastResponseReceived = System.currentTimeMillis();
 	}
-
+	
 	/** 
 	 * Implementation of a concurrency guard to make sure execution of the generate methods does not continue 
 	 * to their return statements before the HTTP request has returned (i.e. before mJSONResponse has a non null value)
@@ -374,7 +374,7 @@ public class RandomJSONRPC {
 		if(((JsonObject) mJSONResponse.get("result")).has("advisoryDelay"))
 			mAdvisoryDelay = ((JsonObject) mJSONResponse.get("result")).get("advisoryDelay").getAsLong();
 	}
-
+	
 	/**
 	 * Check if an error occurred and in that case throw the appropriate exception
 	 * @param json The JSON response object from the server
@@ -393,7 +393,7 @@ public class RandomJSONRPC {
 		//the case where an unknown error occurred, or an error that has nothing to do with the parameters supplied by the client occurred
 		throw new RuntimeException("Code: " + String.valueOf(errorCode) + ". Message" + message); 
 	}
-
+	
 	/**
 	 * Do the actual connect() call to to open the connection and send the data over the network
 	 * @return The HTTPResponse object from the server
@@ -406,7 +406,7 @@ public class RandomJSONRPC {
 		//return the stream from the response
 		return new BufferedReader(new InputStreamReader(con.getInputStream()));
 	}
-
+	
 	/**
 	 * Create a connection object for communicating with the random.org server
 	 * @return The HttpsURLConnection object with the correct settings for sending the JSONRPC requests
@@ -423,7 +423,7 @@ public class RandomJSONRPC {
 		out.write(mJSONRequest.toString().getBytes());
 		return con;
 	}
-
+	
 	/**
 	 * Parse the data from the remote procedure call response
 	 * @param buffer The buffer with the response stream
@@ -437,7 +437,7 @@ public class RandomJSONRPC {
 		buffer.close(); 
 		return new JsonParser().parse(content).getAsJsonObject();
 	}
-
+	
 	/**
 	 * Extract integers from the JSON response object
 	 * @return An array containing the integers
@@ -453,7 +453,7 @@ public class RandomJSONRPC {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Extract doubles from the JSON response object
 	 * @return An array containing the doubles
@@ -469,7 +469,7 @@ public class RandomJSONRPC {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Extract strings from the JSON response object
 	 * @return An array containing the strings
@@ -485,7 +485,7 @@ public class RandomJSONRPC {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Extract UUIDs from the JSON response object
 	 * @return An array containing the UUIDs
@@ -501,7 +501,7 @@ public class RandomJSONRPC {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Unwrap the data from inside the result and random fields
 	 * @return The JSOn object with the data
@@ -511,5 +511,5 @@ public class RandomJSONRPC {
 		JsonObject randomObject = (JsonObject) resultObject.get("random");
 		return randomObject.getAsJsonArray("data");		
 	}
-
+	
 }
