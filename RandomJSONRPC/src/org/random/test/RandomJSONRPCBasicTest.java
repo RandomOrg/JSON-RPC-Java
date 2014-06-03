@@ -16,7 +16,7 @@ import org.random.api.RandomJSONRPC;
 public class RandomJSONRPCBasicTest{
 
 	private static RandomJSONRPC rpc;
-	private static final String API_KEY = "/**your RANDOM.ORG api key goes here**/";
+	private static final String API_KEY = "430dbec3-ef2e-4a97-8c4e-360a35cd70c0";
 	private static final int BIT_QUOTA = 1000000;
 
 	@BeforeClass
