@@ -23,7 +23,7 @@ The default setup is best for non-time-critical serialized requests, e.g., batch
 		System.out.println(Arrays.toString(randoms));
 	} catch (...) { ... }
 	
-    [9, 5, 4, 1, 10]
+	[9, 5, 4, 1, 10]
 
 ...or for more time sensitive serialized applications, e.g., real-time draws, use:
 
