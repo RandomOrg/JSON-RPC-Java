@@ -88,7 +88,7 @@ public class RandomOrgClient {
 
 	private static HashSet<Integer> randomOrgErrors = new HashSet<Integer>();
 	static {
-		int[] ints = {100, 101, 200, 201, 202, 203, 204, 300, 301, 302, 303, 304, 400, 401, 500, 32000};
+		int[] ints = {100, 101, 200, 201, 202, 203, 204, 300, 301, 302, 303, 304, 400, 401, 402, 403, 500, 32000};
 		for (int i : ints) {
 			RandomOrgClient.randomOrgErrors.add(i);
 		}
