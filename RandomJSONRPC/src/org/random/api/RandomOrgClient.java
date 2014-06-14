@@ -17,9 +17,11 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.random.api.exception.RandomOrgAllowanceExceededException;
 import org.random.api.exception.RandomOrgBadHTTPResponseException;
+import org.random.api.exception.RandomOrgInsufficientBitsError;
+import org.random.api.exception.RandomOrgInsufficientRequestsError;
 import org.random.api.exception.RandomOrgJSONRPCError;
+import org.random.api.exception.RandomOrgKeyNotRunningError;
 import org.random.api.exception.RandomOrgRANDOMORGError;
 import org.random.api.exception.RandomOrgSendTimeoutException;
 
@@ -199,7 +201,9 @@ public class RandomOrgClient {
 	 ** @return array of random integers.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -207,7 +211,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public int[] generateIntegers(int n, int min, int max) throws RandomOrgSendTimeoutException,
-																  RandomOrgAllowanceExceededException, 
+																  RandomOrgKeyNotRunningError,
+																  RandomOrgInsufficientRequestsError, 
+																  RandomOrgInsufficientBitsError,
 																  RandomOrgBadHTTPResponseException,
 																  RandomOrgRANDOMORGError,
 																  RandomOrgJSONRPCError,
@@ -228,7 +234,9 @@ public class RandomOrgClient {
 	 ** @return array of random integers.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -236,7 +244,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public int[] generateIntegers(int n, int min, int max, boolean replacement) throws RandomOrgSendTimeoutException,
-																					   RandomOrgAllowanceExceededException, 
+																					   RandomOrgKeyNotRunningError,
+																					   RandomOrgInsufficientRequestsError, 
+																					   RandomOrgInsufficientBitsError,
 																					   RandomOrgBadHTTPResponseException,
 																					   RandomOrgRANDOMORGError,
 																					   RandomOrgJSONRPCError,
@@ -267,7 +277,9 @@ public class RandomOrgClient {
 	 ** @return array of random doubles.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -275,7 +287,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public double[] generateDecimalFractions(int n, int decimalPlaces) throws RandomOrgSendTimeoutException,
-																			  RandomOrgAllowanceExceededException, 
+																			  RandomOrgKeyNotRunningError,
+																			  RandomOrgInsufficientRequestsError, 
+																			  RandomOrgInsufficientBitsError,
 																			  RandomOrgBadHTTPResponseException,
 																			  RandomOrgRANDOMORGError,
 																			  RandomOrgJSONRPCError,
@@ -296,7 +310,9 @@ public class RandomOrgClient {
 	 ** @return array of random doubles.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -304,7 +320,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public double[] generateDecimalFractions(int n, int decimalPlaces, boolean replacement) throws RandomOrgSendTimeoutException,
-																								   RandomOrgAllowanceExceededException, 
+																								   RandomOrgKeyNotRunningError,
+																								   RandomOrgInsufficientRequestsError, 
+																								   RandomOrgInsufficientBitsError,
 																								   RandomOrgBadHTTPResponseException,
 																								   RandomOrgRANDOMORGError,
 																								   RandomOrgJSONRPCError,
@@ -336,7 +354,9 @@ public class RandomOrgClient {
 	 ** @return array of true random doubles from a Gaussian distribution.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -344,7 +364,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public double[] generateGaussians(int n, double mean, double standardDeviation, int significantDigits) throws RandomOrgSendTimeoutException,
-																												  RandomOrgAllowanceExceededException, 
+																												  RandomOrgKeyNotRunningError,
+																												  RandomOrgInsufficientRequestsError, 
+																												  RandomOrgInsufficientBitsError,
 																												  RandomOrgBadHTTPResponseException,
 																												  RandomOrgRANDOMORGError,
 																												  RandomOrgJSONRPCError,
@@ -376,7 +398,9 @@ public class RandomOrgClient {
 	 ** @return array of random Strings.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -384,7 +408,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public String[] generateStrings(int n, int length, String characters) throws RandomOrgSendTimeoutException,
-																				 RandomOrgAllowanceExceededException, 
+																				 RandomOrgKeyNotRunningError,
+																				 RandomOrgInsufficientRequestsError, 
+																				 RandomOrgInsufficientBitsError, 
 																				 RandomOrgBadHTTPResponseException,
 																				 RandomOrgRANDOMORGError,
 																				 RandomOrgJSONRPCError,
@@ -406,7 +432,9 @@ public class RandomOrgClient {
 	 ** @return array of random Strings.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -414,7 +442,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public String[] generateStrings(int n, int length, String characters, boolean replacement) throws RandomOrgSendTimeoutException,
-																									  RandomOrgAllowanceExceededException, 
+																									  RandomOrgKeyNotRunningError,
+																									  RandomOrgInsufficientRequestsError, 
+																									  RandomOrgInsufficientBitsError,
 																									  RandomOrgBadHTTPResponseException,
 																									  RandomOrgRANDOMORGError,
 																									  RandomOrgJSONRPCError,
@@ -443,7 +473,9 @@ public class RandomOrgClient {
 	 ** @return array of random UUIDs.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -451,7 +483,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public UUID[] generateUUIDs(int n) throws RandomOrgSendTimeoutException,
-											  RandomOrgAllowanceExceededException,
+											  RandomOrgKeyNotRunningError,
+											  RandomOrgInsufficientRequestsError, 
+											  RandomOrgInsufficientBitsError,
 											  RandomOrgBadHTTPResponseException,
 											  RandomOrgRANDOMORGError,
 											  RandomOrgJSONRPCError,
@@ -478,7 +512,9 @@ public class RandomOrgClient {
 	 ** @return array of random blobs as Strings.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -486,7 +522,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public String[] generateBlobs(int n, int size) throws RandomOrgSendTimeoutException,
-														  RandomOrgAllowanceExceededException,
+														  RandomOrgKeyNotRunningError,
+														  RandomOrgInsufficientRequestsError, 
+														  RandomOrgInsufficientBitsError,
 														  RandomOrgBadHTTPResponseException,
 														  RandomOrgRANDOMORGError,
 														  RandomOrgJSONRPCError,
@@ -507,7 +545,9 @@ public class RandomOrgClient {
 	 ** @return array of random blobs as Strings.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -515,7 +555,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public String[] generateBlobs(int n, int size, String format) throws RandomOrgSendTimeoutException,
-																		 RandomOrgAllowanceExceededException,
+																		 RandomOrgKeyNotRunningError,
+																		 RandomOrgInsufficientRequestsError, 
+																		 RandomOrgInsufficientBitsError,
 																		 RandomOrgBadHTTPResponseException,
 																		 RandomOrgRANDOMORGError,
 																		 RandomOrgJSONRPCError,
@@ -548,7 +590,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random int[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -556,7 +600,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max) throws RandomOrgSendTimeoutException,
-																						  RandomOrgAllowanceExceededException, 
+																						  RandomOrgKeyNotRunningError,
+																						  RandomOrgInsufficientRequestsError, 
+																						  RandomOrgInsufficientBitsError,
 																						  RandomOrgBadHTTPResponseException,
 																						  RandomOrgRANDOMORGError,
 																						  RandomOrgJSONRPCError,
@@ -578,7 +624,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random int[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -586,7 +634,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max, boolean replacement) throws RandomOrgSendTimeoutException,
-																											   RandomOrgAllowanceExceededException, 
+																											   RandomOrgKeyNotRunningError,
+																											   RandomOrgInsufficientRequestsError, 
+																											   RandomOrgInsufficientBitsError,
 																											   RandomOrgBadHTTPResponseException,
 																											   RandomOrgRANDOMORGError,
 																											   RandomOrgJSONRPCError,
@@ -621,7 +671,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random double[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -629,7 +681,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces) throws RandomOrgSendTimeoutException,
-																								   RandomOrgAllowanceExceededException, 
+																								   RandomOrgKeyNotRunningError,
+																								   RandomOrgInsufficientRequestsError, 
+																								   RandomOrgInsufficientBitsError,
 																								   RandomOrgBadHTTPResponseException,
 																								   RandomOrgRANDOMORGError,
 																								   RandomOrgJSONRPCError,
@@ -652,7 +706,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random double[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -660,7 +716,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement) throws RandomOrgSendTimeoutException,
-																														RandomOrgAllowanceExceededException, 
+																														RandomOrgKeyNotRunningError,
+																														RandomOrgInsufficientRequestsError, 
+																														RandomOrgInsufficientBitsError,
 																														RandomOrgBadHTTPResponseException,
 																														RandomOrgRANDOMORGError,
 																														RandomOrgJSONRPCError,
@@ -696,7 +754,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random double[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -704,7 +764,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits) throws RandomOrgSendTimeoutException,
-																																	   RandomOrgAllowanceExceededException, 
+																																	   RandomOrgKeyNotRunningError,
+																																	   RandomOrgInsufficientRequestsError, 
+																																	   RandomOrgInsufficientBitsError, 
 																																	   RandomOrgBadHTTPResponseException,
 																																	   RandomOrgRANDOMORGError,
 																																	   RandomOrgJSONRPCError,
@@ -740,7 +802,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random String[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -748,7 +812,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters) throws RandomOrgSendTimeoutException,
-																									  RandomOrgAllowanceExceededException, 
+																									  RandomOrgKeyNotRunningError,
+																									  RandomOrgInsufficientRequestsError, 
+																									  RandomOrgInsufficientBitsError,
 																									  RandomOrgBadHTTPResponseException,
 																									  RandomOrgRANDOMORGError,
 																									  RandomOrgJSONRPCError,
@@ -771,7 +837,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random String[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -779,12 +847,14 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement) throws RandomOrgSendTimeoutException,
-																									  RandomOrgAllowanceExceededException, 
-																									  RandomOrgBadHTTPResponseException,
-																									  RandomOrgRANDOMORGError,
-																									  RandomOrgJSONRPCError,
-																									  MalformedURLException,
-																									  IOException {
+																														   RandomOrgKeyNotRunningError,
+																														   RandomOrgInsufficientRequestsError, 
+																														   RandomOrgInsufficientBitsError,
+																														   RandomOrgBadHTTPResponseException,
+																														   RandomOrgRANDOMORGError,
+																														   RandomOrgJSONRPCError,
+																														   MalformedURLException,
+																														   IOException {
 		
 		JsonObject request = new JsonObject();
 
@@ -813,7 +883,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random UUID[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -821,12 +893,14 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedUUIDs(int n) throws RandomOrgSendTimeoutException,
-											  RandomOrgAllowanceExceededException,
-											  RandomOrgBadHTTPResponseException,
-											  RandomOrgRANDOMORGError,
-											  RandomOrgJSONRPCError,
-											  MalformedURLException,
-											  IOException {
+																	 RandomOrgKeyNotRunningError,
+																	 RandomOrgInsufficientRequestsError, 
+																	 RandomOrgInsufficientBitsError,
+																	 RandomOrgBadHTTPResponseException,
+																	 RandomOrgRANDOMORGError,
+																	 RandomOrgJSONRPCError,
+																	 MalformedURLException,
+																	 IOException {
 		
 		JsonObject request = new JsonObject();
 		
@@ -852,7 +926,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random String[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -860,12 +936,14 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedBlobs(int n, int size) throws RandomOrgSendTimeoutException,
-														  RandomOrgAllowanceExceededException,
-														  RandomOrgBadHTTPResponseException,
-														  RandomOrgRANDOMORGError,
-														  RandomOrgJSONRPCError,
-														  MalformedURLException,
-														  IOException {
+																			   RandomOrgKeyNotRunningError,
+																			   RandomOrgInsufficientRequestsError, 
+																			   RandomOrgInsufficientBitsError,
+																			   RandomOrgBadHTTPResponseException,
+																			   RandomOrgRANDOMORGError,
+																			   RandomOrgJSONRPCError,
+																			   MalformedURLException,
+																			   IOException {
 		
 		return this.generateSignedBlobs(n, size, RandomOrgClient.BLOB_FORMAT_BASE64);
 	}
@@ -882,7 +960,9 @@ public class RandomOrgClient {
 	 ** @return HashMap with "random": random JsonObject, "signature": signature String, "data": random String[]
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -890,12 +970,14 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public HashMap<String, Object> generateSignedBlobs(int n, int size, String format) throws RandomOrgSendTimeoutException,
-																		 RandomOrgAllowanceExceededException,
-																		 RandomOrgBadHTTPResponseException,
-																		 RandomOrgRANDOMORGError,
-																		 RandomOrgJSONRPCError,
-																		 MalformedURLException,
-																		 IOException {
+																							  RandomOrgKeyNotRunningError,
+																							  RandomOrgInsufficientRequestsError, 
+																							  RandomOrgInsufficientBitsError,
+																							  RandomOrgBadHTTPResponseException,
+																							  RandomOrgRANDOMORGError,
+																							  RandomOrgJSONRPCError,
+																							  MalformedURLException,
+																							  IOException {
 		
 		JsonObject request = new JsonObject();
 		
@@ -925,7 +1007,9 @@ public class RandomOrgClient {
 	 ** @return verification success.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -933,12 +1017,14 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public boolean verifySignature(JsonObject random, String signature) throws RandomOrgSendTimeoutException,
-																				   RandomOrgAllowanceExceededException,
-																				   RandomOrgBadHTTPResponseException,
-																				   RandomOrgRANDOMORGError,
-																				   RandomOrgJSONRPCError,
-																				   MalformedURLException,
-																				   IOException {
+																			   RandomOrgKeyNotRunningError,
+																			   RandomOrgInsufficientRequestsError, 
+																			   RandomOrgInsufficientBitsError,
+																			   RandomOrgBadHTTPResponseException,
+																			   RandomOrgRANDOMORGError,
+																			   RandomOrgJSONRPCError,
+																			   MalformedURLException,
+																			   IOException {
 		
 		JsonObject request = new JsonObject();
 		
@@ -1009,7 +1095,7 @@ public class RandomOrgClient {
 		return new RandomOrgCache<int[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgAllowanceExceededException, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<int[]>() {
@@ -1073,7 +1159,7 @@ public class RandomOrgClient {
 		return new RandomOrgCache<double[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgAllowanceExceededException, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<double[]>() {
@@ -1134,7 +1220,7 @@ public class RandomOrgClient {
 		return new RandomOrgCache<double[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgAllowanceExceededException, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<double[]>() {
@@ -1203,7 +1289,7 @@ public class RandomOrgClient {
 		return new RandomOrgCache<String[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgAllowanceExceededException, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<String[]>() {
@@ -1254,7 +1340,7 @@ public class RandomOrgClient {
 		return new RandomOrgCache<UUID[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgAllowanceExceededException, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<UUID[]>() {
@@ -1312,7 +1398,7 @@ public class RandomOrgClient {
 		return new RandomOrgCache<String[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgAllowanceExceededException, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<String[]>() {
@@ -1333,7 +1419,9 @@ public class RandomOrgClient {
 	 ** @return number of requests remaining.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1341,7 +1429,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public int getRequestsLeft() throws RandomOrgSendTimeoutException,
-										RandomOrgAllowanceExceededException,
+										RandomOrgKeyNotRunningError,
+										RandomOrgInsufficientRequestsError, 
+										RandomOrgInsufficientBitsError,
 										RandomOrgBadHTTPResponseException,
 										RandomOrgRANDOMORGError,
 										RandomOrgJSONRPCError,
@@ -1360,7 +1450,9 @@ public class RandomOrgClient {
 	 ** @return number of bits remaining.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1368,7 +1460,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	public int getBitsLeft() throws RandomOrgSendTimeoutException,
-									RandomOrgAllowanceExceededException,
+									RandomOrgKeyNotRunningError,
+									RandomOrgInsufficientRequestsError, 
+									RandomOrgInsufficientBitsError,
 									RandomOrgBadHTTPResponseException,
 									RandomOrgRANDOMORGError,
 									RandomOrgJSONRPCError,
@@ -1385,7 +1479,9 @@ public class RandomOrgClient {
 	/** Issue a getUsage request to update bits and requests left.
      ** 
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1393,7 +1489,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	private void getUsage() throws RandomOrgSendTimeoutException,
-								   RandomOrgAllowanceExceededException,
+								   RandomOrgKeyNotRunningError,
+								   RandomOrgInsufficientRequestsError, 
+								   RandomOrgInsufficientBitsError,
 								   RandomOrgBadHTTPResponseException,
 								   RandomOrgRANDOMORGError,
 								   RandomOrgJSONRPCError,
@@ -1561,7 +1659,9 @@ public class RandomOrgClient {
 	 ** @return JsonObject response.
 	 ** 
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1569,7 +1669,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	protected JsonObject sendRequest(JsonObject request) throws RandomOrgSendTimeoutException,
-																RandomOrgAllowanceExceededException, 
+																RandomOrgKeyNotRunningError,
+																RandomOrgInsufficientRequestsError, 
+																RandomOrgInsufficientBitsError, 
 																RandomOrgBadHTTPResponseException,
 																RandomOrgRANDOMORGError,
 																RandomOrgJSONRPCError,
@@ -1586,7 +1688,9 @@ public class RandomOrgClient {
 	 ** @return JsonObject response.
 	 ** 
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1594,7 +1698,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	private JsonObject sendUnserializedRequest(JsonObject request) throws RandomOrgSendTimeoutException,
-																		  RandomOrgAllowanceExceededException, 
+																		  RandomOrgKeyNotRunningError,
+																		  RandomOrgInsufficientRequestsError, 
+																		  RandomOrgInsufficientBitsError,
 																		  RandomOrgBadHTTPResponseException,
 																		  RandomOrgRANDOMORGError,
 																		  RandomOrgJSONRPCError,
@@ -1655,7 +1761,9 @@ public class RandomOrgClient {
 	 ** @return JsonObject response.
 	 ** 
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1663,7 +1771,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	private JsonObject sendSerializedRequest(JsonObject request) throws RandomOrgSendTimeoutException,
-																		RandomOrgAllowanceExceededException, 
+																		RandomOrgKeyNotRunningError,
+																		RandomOrgInsufficientRequestsError, 
+																		RandomOrgInsufficientBitsError,
 																		RandomOrgBadHTTPResponseException,
 																		RandomOrgRANDOMORGError,
 																		RandomOrgJSONRPCError,
@@ -1765,7 +1875,9 @@ public class RandomOrgClient {
 	 ** @param e exception to throw.
 	 **
 	 ** @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request can be sent. 
-	 ** @throws RandomOrgAllowanceExceededException API key's server allowance has been exceeded.
+	 ** @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 ** @throws RandomOrgInsufficientRequestsError API key's server requests allowance has been exceeded.
+	 ** @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
 	 ** @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
 	 ** @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
 	 ** @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
@@ -1773,7 +1885,9 @@ public class RandomOrgClient {
 	 ** @throws IOException @see java.io.IOException
 	 **/
 	private void throwException(Exception e) throws RandomOrgSendTimeoutException,
-													RandomOrgAllowanceExceededException, 
+													RandomOrgKeyNotRunningError,
+													RandomOrgInsufficientRequestsError, 
+													RandomOrgInsufficientBitsError,
 													RandomOrgBadHTTPResponseException,
 													RandomOrgRANDOMORGError,
 													RandomOrgJSONRPCError,
@@ -1782,8 +1896,12 @@ public class RandomOrgClient {
 		
 		if (e.getClass() == RandomOrgSendTimeoutException.class) {
 			throw (RandomOrgSendTimeoutException) e;
-		} else if (e.getClass() == RandomOrgAllowanceExceededException.class) {
-			throw (RandomOrgAllowanceExceededException) e;
+		} else if (e.getClass() == RandomOrgKeyNotRunningError.class) {
+			throw (RandomOrgKeyNotRunningError) e;
+		} else if (e.getClass() == RandomOrgInsufficientRequestsError.class) {
+			throw (RandomOrgInsufficientRequestsError) e;
+		} else if (e.getClass() == RandomOrgInsufficientBitsError.class) {
+			throw (RandomOrgInsufficientBitsError) e;
 		} else if (e.getClass() == RandomOrgBadHTTPResponseException.class) {
 			throw (RandomOrgBadHTTPResponseException) e;
 		} else if (e.getClass() == RandomOrgRANDOMORGError.class) {
@@ -1804,7 +1922,9 @@ public class RandomOrgClient {
 	 ** @return info on request success/response in a HashMap with one or other of the following entries:
 	 **				"exception" : Exception - exception thrown, possible exception types:
 	 **											RandomOrgSendTimeoutException
-	 **											RandomOrgAllowanceExceededException
+	 **											RandomOrgKeyNotRunningError
+	 **											RandomOrgInsufficientRequestsError
+	 **											RandomOrgInsufficientBitsError
 	 ** 										RandomOrgBadHTTPResponseException
 	 ** 										RandomOrgRANDOMORGError
 	 ** 										RandomOrgJSONRPCError
@@ -1821,7 +1941,7 @@ public class RandomOrgClient {
 			
 			// Time not yet up, throw exception.
 			if (System.currentTimeMillis() < this.backoff) {
-				ret.put("exception", new RandomOrgAllowanceExceededException(this.backoffError));
+				ret.put("exception", new RandomOrgInsufficientRequestsError(this.backoffError));
 				return ret;
 			// Time is up, clear back-off.
 			} else {
@@ -1878,7 +1998,7 @@ public class RandomOrgClient {
 			
 			// RandomOrgAllowanceExceededError, API key not running, backoff until midnight UTC, 
 			// from RANDOM.ORG Errors: https://api.random.org/json-rpc/1/error-codes
-			if (code == 401) {
+			if (code == 402) {
 				
 				Calendar date = new GregorianCalendar();
 				date.set(Calendar.HOUR_OF_DAY, 0);
@@ -1889,9 +2009,16 @@ public class RandomOrgClient {
 				
 				this.backoff = date.getTimeInMillis();
 				this.backoffError = "Error " + code + ": " + message;
-				ret.put("exception", new RandomOrgAllowanceExceededException(this.backoffError));
+				ret.put("exception", new RandomOrgInsufficientRequestsError(this.backoffError));
 				return ret;
-				
+			} else if (code == 401) {
+				ret.put("exception", new RandomOrgKeyNotRunningError("Error " + code + ": " + message));
+				return ret;
+
+			} else if (code == 403) {
+				ret.put("exception", new RandomOrgInsufficientBitsError("Error " + code + ": " + message));
+				return ret;
+
 			// RandomOrgRANDOMORGError from RANDOM.ORG Errors: https://api.random.org/json-rpc/1/error-codes
 			} else if (RandomOrgClient.randomOrgErrors.contains(code)) {
 				ret.put("exception", new RandomOrgRANDOMORGError("Error " + code + ": " + message));
