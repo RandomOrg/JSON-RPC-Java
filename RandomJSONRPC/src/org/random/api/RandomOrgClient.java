@@ -1079,9 +1079,9 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
+		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
 		if (replacement) {
-			bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+			bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1143,9 +1143,9 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
+		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
 		if (replacement) {
-			bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+			bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1210,8 +1210,8 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
-		bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
+		bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
@@ -1273,9 +1273,9 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
+		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
 		if (replacement) {
-			bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+			bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1330,8 +1330,8 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
-		bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
+		bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
@@ -1388,8 +1388,8 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
-		bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
+		bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
