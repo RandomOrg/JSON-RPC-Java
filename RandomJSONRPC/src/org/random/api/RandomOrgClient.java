@@ -75,6 +75,17 @@ public class RandomOrgClient {
 	private static final String SIGNED_BLOB_METHOD				= "generateSignedBlobs";
 	private static final String VERIFY_SIGNATURE_METHOD			= "verifySignature";
 
+	// Minimum count of objects requested at once by caches
+	private static final int MIN_BULK 							= 5;
+
+	// Maximum count of objects can be requested per type
+	public static final int MAX_INTEGERS						= 10_000;
+	public static final int MAX_DECIMAL_FRACTIONS				= 10_000;
+	public static final int MAX_GAUSSIANS						= 10_000;
+	public static final int MAX_STRINGS							= 10_000;
+	public static final int MAX_UUIDS							= 1_000;
+	public static final int MAX_BLOBS							= 100;
+	
 	// Blob format literals
 	public static final String BLOB_FORMAT_BASE64				= "base64";
 	public static final String BLOB_FORMAT_HEX					= "hex";
@@ -1079,9 +1090,19 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
 		if (replacement) {
-			bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
+			// Request commonly the halve cache size from the server
+			bulkN = cacheSize/2;
+			
+			// Increase bulk if the cache is small
+			if (bulkN < MIN_BULK)
+				bulkN = MIN_BULK;
+			
+			// Guarantee that bulk would not exceed max request count
+			if (bulkN * n > MAX_INTEGERS) {
+				bulkN = MAX_INTEGERS / n;
+			}
+			
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1143,9 +1164,19 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
 		if (replacement) {
-			bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
+			// Request commonly the halve cache size from the server
+			bulkN = cacheSize/2;
+			
+			// Increase bulk if the cache is small
+			if (bulkN < MIN_BULK)
+				bulkN = MIN_BULK;
+			
+			// Guarantee that bulk would not exceed max request count
+			if (bulkN * n > MAX_DECIMAL_FRACTIONS) {
+				bulkN = MAX_DECIMAL_FRACTIONS / n;
+			}
+			
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1209,9 +1240,19 @@ public class RandomOrgClient {
 		
 		int bulkN = 0;
 
-		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
-		bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
+		// make requests more efficient by bulk-ordering from the server.
+		// Request commonly the halve cache size from the server
+		bulkN = cacheSize/2;
+		
+		// Increase bulk if the cache is small
+		if (bulkN < MIN_BULK)
+			bulkN = MIN_BULK;
+		
+		// Guarantee that bulk would not exceed max request count
+		if (bulkN * n > MAX_GAUSSIANS) {
+			bulkN = MAX_GAUSSIANS / n;
+		}
+		
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
@@ -1273,9 +1314,19 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
 		if (replacement) {
-			bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
+			// Request commonly the halve cache size from the server
+			bulkN = cacheSize/2;
+			
+			// Increase bulk if the cache is small
+			if (bulkN < MIN_BULK)
+				bulkN = MIN_BULK;
+			
+			// Guarantee that bulk would not exceed max request count
+			if (bulkN * n > MAX_STRINGS) {
+				bulkN = MAX_STRINGS / n;
+			}
+			
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1329,9 +1380,19 @@ public class RandomOrgClient {
 		
 		int bulkN = 0;
 
-		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
-		bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
+		// make requests more efficient by bulk-ordering from the server.
+		// Request commonly the halve cache size from the server
+		bulkN = cacheSize/2;
+		
+		// Increase bulk if the cache is small
+		if (bulkN < MIN_BULK)
+			bulkN = MIN_BULK;
+		
+		// Guarantee that bulk would not exceed max request count
+		if (bulkN * n > MAX_UUIDS) {
+			bulkN = MAX_UUIDS / n;
+		}
+		
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
@@ -1388,8 +1449,18 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 <= cache_size.
-		bulkN = 5 <= cacheSize ? cacheSize/2 : 5;
+		// Request commonly the halve cache size from the server
+		bulkN = cacheSize/2;
+		
+		// Increase bulk if the cache is small
+		if (bulkN < MIN_BULK)
+			bulkN = MIN_BULK;
+		
+		// Guarantee that bulk would not exceed max request count
+		if (bulkN * n > MAX_BLOBS) {
+			bulkN = MAX_BLOBS / n;
+		}
+		
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
