@@ -273,7 +273,7 @@ public class RandomOrgRandom extends Random {
 	}
 	
 	@Override
-	protected int next(int numBits) {
+	public int next(int numBits) {
 		int numShorts = (numBits+15)/16;
 		short b[] = new short[numShorts];
 		int next = 0;
@@ -301,6 +301,25 @@ public class RandomOrgRandom extends Random {
 			next = (next << 16) + (b[i] & 0xFFFF);
 		
 		return next ;//>>> (numShorts*16 - numBits);
+	}
+	
+	@Override
+	public int nextInt(int n) {
+		if (n <= 0)
+			throw new IllegalArgumentException("n must be positive");
+		
+		int bits = (int) Math.ceil(Math.log(n) / Math.log(2));
+		
+		if ((n & -n) == n)  // i.e., n is a power of 2
+			return next(bits);
+
+		int input, val;
+		do {
+			input = next(bits);
+			val = input % n;
+		} while (input - val + (n-1) < 0);
+		return val;
+		
 	}
 
 	/**
