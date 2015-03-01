@@ -99,7 +99,7 @@ public class RandomOrgCache<T> {
 			if (this.bulkRequestNumber > 0) {
 
 				// Is there space for a bulk response in the queue?
-				if (this.queue.size() < (this.cacheSize - this.bulkRequestNumber)) {
+				if (this.queue.size() < this.cacheSize) {
 					
 					// Issue and process request and response.
 					try {
