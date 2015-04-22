@@ -85,6 +85,9 @@ public class RandomOrgClient {
 	// On request fetch fresh allowance state if current state data is older than this value (1 hour)
 	private static final int ALLOWANCE_STATE_REFRESH_SECONDS	= 3600*1000;
 	
+	// default data sizes in bits
+	private static final int UUID_SIZE							= 122;
+	
 	// Maintain a dictionary of API keys and their instances.
 	private static HashMap<String, RandomOrgClient> keyIndexedInstances = new HashMap<String, RandomOrgClient>();
 
@@ -1079,9 +1082,9 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
+		// initially set at cache_size/2, but cache will auto-shrink bulk request size if requests can't be fulfilled.
 		if (replacement) {
-			bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+			bulkN = cacheSize/2;
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1092,10 +1095,13 @@ public class RandomOrgClient {
 		// get the request object for use in all requests from this cache
 		request = this.generateKeyedRequest(request, INTEGER_METHOD);
 		
+		// max single request size, in bits, for adjusting bulk requests later
+		int maxRequestSize = (int) Math.ceil(Math.log(max - min + 1)/Math.log(2) * n);
+		
 		return new RandomOrgCache<int[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgKeyNotRunningError, RandomOrgInsufficientRequestsError, RandomOrgInsufficientBitsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<int[]>() {
@@ -1104,7 +1110,7 @@ public class RandomOrgClient {
 						return RandomOrgClient.this.extractInts(this.input);
 					}
 				},
-				request, cacheSize, bulkN, n);
+				request, cacheSize, bulkN, n, maxRequestSize);
 	}
 
 	/** Get a RandomOrgCache to obtain random decimal fractions. The RandomOrgCache can be polled for new results 
@@ -1143,9 +1149,9 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
+		// initially set at cache_size/2, but cache will auto-shrink bulk request size if requests can't be fulfilled.
 		if (replacement) {
-			bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+			bulkN = cacheSize/2;
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1156,10 +1162,13 @@ public class RandomOrgClient {
 		// get the request object for use in all requests from this cache
 		request = this.generateKeyedRequest(request, DECIMAL_FRACTION_METHOD);
 		
+		// max single request size, in bits, for adjusting bulk requests later
+		int maxRequestSize = (int) Math.ceil(Math.log(10)/Math.log(2) * decimalPlaces * n);
+
 		return new RandomOrgCache<double[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgKeyNotRunningError, RandomOrgInsufficientRequestsError, RandomOrgInsufficientBitsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<double[]>() {
@@ -1168,7 +1177,7 @@ public class RandomOrgClient {
 						return RandomOrgClient.this.extractDoubles(this.input);
 					}
 				},
-				request, cacheSize, bulkN, n);
+				request, cacheSize, bulkN, n, maxRequestSize);
 	}
 
 	/** Get a RandomOrgCache to obtain random numbers. The RandomOrgCache can be polled for new results 
@@ -1210,17 +1219,20 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
-		bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+		// initially set at cache_size/2, but cache will auto-shrink bulk request size if requests can't be fulfilled.
+		bulkN = cacheSize/2;
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
 		request = this.generateKeyedRequest(request, GAUSSIAN_METHOD);
 		
+		// max single request size, in bits, for adjusting bulk requests later
+		int maxRequestSize = (int) Math.ceil(Math.log(Math.pow(10, significantDigits))/Math.log(2) * n);
+
 		return new RandomOrgCache<double[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgKeyNotRunningError, RandomOrgInsufficientRequestsError, RandomOrgInsufficientBitsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<double[]>() {
@@ -1229,7 +1241,7 @@ public class RandomOrgClient {
 						return RandomOrgClient.this.extractDoubles(this.input);
 					}
 				},
-				request, cacheSize, bulkN, n);
+				request, cacheSize, bulkN, n, maxRequestSize);
 	}
 
 	/** Get a RandomOrgCache to obtain random strings. The RandomOrgCache can be polled for new results 
@@ -1273,9 +1285,9 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// If possible, make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
+		// initially set at cache_size/2, but cache will auto-shrink bulk request size if requests can't be fulfilled.
 		if (replacement) {
-			bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+			bulkN = cacheSize/2;
 			request.addProperty("n", bulkN*n);
 
 		// not possible to make the request more efficient
@@ -1286,10 +1298,13 @@ public class RandomOrgClient {
 		// get the request object for use in all requests from this cache
 		request = this.generateKeyedRequest(request, STRING_METHOD);
 		
+		// max single request size, in bits, for adjusting bulk requests later
+		int maxRequestSize = (int) Math.ceil(Math.log(characters.length())/Math.log(2) * length * n);
+
 		return new RandomOrgCache<String[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgKeyNotRunningError, RandomOrgInsufficientRequestsError, RandomOrgInsufficientBitsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<String[]>() {
@@ -1298,7 +1313,7 @@ public class RandomOrgClient {
 						return RandomOrgClient.this.extractStrings(this.input);
 					}
 				},
-				request, cacheSize, bulkN, n);
+				request, cacheSize, bulkN, n, maxRequestSize);
 	}
 
 	/** Get a RandomOrgCache to obtain UUIDs. The RandomOrgCache can be polled for new results conforming to the 
@@ -1330,17 +1345,20 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
-		bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+		// initially set at cache_size/2, but cache will auto-shrink bulk request size if requests can't be fulfilled.
+		bulkN = cacheSize/2;
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
 		request = this.generateKeyedRequest(request, UUID_METHOD);
 		
+		// max single request size, in bits, for adjusting bulk requests later
+		int maxRequestSize = n*UUID_SIZE;
+
 		return new RandomOrgCache<UUID[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgKeyNotRunningError, RandomOrgInsufficientRequestsError, RandomOrgInsufficientBitsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<UUID[]>() {
@@ -1349,7 +1367,7 @@ public class RandomOrgClient {
 						return RandomOrgClient.this.extractUUIDs(this.input);
 					}
 				},
-				request, cacheSize, bulkN, n);
+				request, cacheSize, bulkN, n, maxRequestSize);
 	}
 
 	/** Get a RandomOrgCache to obtain random blobs. The RandomOrgCache can be polled for new results conforming 
@@ -1388,17 +1406,20 @@ public class RandomOrgClient {
 		int bulkN = 0;
 
 		// make requests more efficient by bulk-ordering from the server. 
-		// Either 5 sets of items at a time, or cache_size/2 if 5 >= cache_size.
-		bulkN = 5 >= cacheSize ? cacheSize/2 : 5;
+		// initially set at cache_size/2, but cache will auto-shrink bulk request size if requests can't be fulfilled.
+		bulkN = cacheSize/2;
 		request.addProperty("n", bulkN*n);
 
 		// get the request object for use in all requests from this cache
 		request = this.generateKeyedRequest(request, BLOB_METHOD);
 		
+		// max single request size, in bits, for adjusting bulk requests later
+		int maxRequestSize = n*size;
+				
 		return new RandomOrgCache<String[]>(
 				new JsonObjectInputCallable<JsonObject>() {
 					@Override
-					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgInsufficientRequestsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
+					public JsonObject call() throws RandomOrgSendTimeoutException, RandomOrgKeyNotRunningError, RandomOrgInsufficientRequestsError, RandomOrgInsufficientBitsError, RandomOrgBadHTTPResponseException, RandomOrgRANDOMORGError, RandomOrgJSONRPCError, MalformedURLException, IOException {
 						return RandomOrgClient.this.sendRequest(this.input);
 					}
 				}, new JsonObjectInputCallable<String[]>() {
@@ -1407,7 +1428,7 @@ public class RandomOrgClient {
 						return RandomOrgClient.this.extractStrings(this.input);
 					}
 				},
-				request, cacheSize, bulkN, n);
+				request, cacheSize, bulkN, n, maxRequestSize);
 	}
 	
 	// Methods for accessing server usage statistics.
@@ -2016,7 +2037,7 @@ public class RandomOrgClient {
 				return ret;
 
 			} else if (code == 403) {
-				ret.put("exception", new RandomOrgInsufficientBitsError("Error " + code + ": " + message));
+				ret.put("exception", new RandomOrgInsufficientBitsError("Error " + code + ": " + message, this.bitsLeft));
 				return ret;
 
 			// RandomOrgRANDOMORGError from RANDOM.ORG Errors: https://api.random.org/json-rpc/1/error-codes

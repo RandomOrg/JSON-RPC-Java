@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.random.api.exception.RandomOrgInsufficientBitsError;
+
 import com.google.gson.JsonObject;
 
 /** Precache class for frequently used requests.
@@ -30,7 +32,7 @@ public class RandomOrgCache<T> {
 	private LinkedList<T> queue = new LinkedList<T>();
 	private int cacheSize;
 	
-	private int bulkRequestNumber, requestNumber;
+	private int bulkRequestNumber, requestNumber, requestSize;
 
 	// lock to allow notification when an item is consumed or pause state is updated.
 	private Object lock = new Object();
@@ -49,9 +51,10 @@ public class RandomOrgCache<T> {
 	 ** @param cacheSize number of request responses to try maintain.
 	 ** @param bulkRequestNumber if request is set to be issued in bulk, number of result sets in a bulk request, else 0.
 	 ** @param requestNumber if request is set to be issued in bulk, number of results in a single request, else 0.
+	 ** @param singleRequestSize in bits for adjusting bulk requests if bits are in short supply on the server.
 	 **/
 	protected RandomOrgCache(JsonObjectInputCallable<JsonObject> requestFunction, JsonObjectInputCallable<T> processFunction, 
-							 JsonObject request, int cacheSize, int bulkRequestNumber, int requestNumber) {
+							 JsonObject request, int cacheSize, int bulkRequestNumber, int requestNumber, int singleRequestSize) {
 		
 		this.requestFunction = requestFunction;
 		this.processFunction = processFunction;
@@ -62,6 +65,7 @@ public class RandomOrgCache<T> {
 		
 		this.bulkRequestNumber = bulkRequestNumber;
 		this.requestNumber = requestNumber;
+		this.requestSize = singleRequestSize;
 		
 		// Thread to keep RandomOrgCache populated.
 		Thread t = new Thread(new Runnable() {
@@ -121,7 +125,25 @@ public class RandomOrgCache<T> {
 							}
 							this.queue.offer(entry);
 						}
+					} catch (RandomOrgInsufficientBitsError e) {
+
+						// get bits left
+						int bits = e.getBits();
+						
+						// can we adapt bulk request size?
+						if (bits != -1 && this.requestSize < bits) {
 							
+							this.bulkRequestNumber = bits / this.requestSize;
+
+							// update bulk request size
+							this.request.remove("n");
+							this.request.addProperty("n", this.bulkRequestNumber*this.requestNumber);
+							
+						// nope - so error
+						} else {
+							throw(e);							
+						}
+						
 					} catch (Exception e) {
 						// Don't handle failures from requestFunction(), Just try again later.
 						LOGGER.log(Level.INFO, "RandomOrgCache populate Exception: " + e.getClass().getName() + ": " + e.getMessage());
