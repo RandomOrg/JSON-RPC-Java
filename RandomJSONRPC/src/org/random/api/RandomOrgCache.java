@@ -39,11 +39,11 @@ public class RandomOrgCache<T> {
 	// lock to allow notification when an item is consumed or pause state is updated.
 	private Object lock = new Object();
 	private boolean paused = false;
-	
-	// counter of bits already used by this cache
+
+	// bits used by this cache - note, not the same as bits remaining on server
 	private long usedBits = 0;
 	
-	// counter of requests already used by this cache
+	// requests used by this cache - note, not the same as requests remaining on server
 	private long usedRequests = 0;
 	
 	private static final Logger LOGGER = Logger.getLogger(RandomOrgClient.class.getPackage().getName());
@@ -119,13 +119,9 @@ public class RandomOrgCache<T> {
 						this.requestFunction.setInput(request);
 						JsonObject response = this.requestFunction.call();
 						
-						// Update usage counter
-						this.usedBits += response.get("result").getAsJsonObject().get("bitsUsed").getAsInt();
-						this.usedRequests++;
-						
 						this.processFunction.setInput(response);
 						T result = this.processFunction.call();
-						
+
 						// Split bulk response into result sets.
 						int length = Array.getLength(result);
 						
@@ -138,6 +134,11 @@ public class RandomOrgCache<T> {
 							}
 							this.queue.offer(entry);
 						}
+						
+						// update usage counters
+						this.usedBits += response.get("result").getAsJsonObject().get("bitsUsed").getAsInt();
+						this.usedRequests++;
+						
 					} catch (RandomOrgInsufficientBitsError e) {
 
 						// get bits left
@@ -177,13 +178,13 @@ public class RandomOrgCache<T> {
 				try {
 					this.requestFunction.setInput(request);
 					JsonObject response = this.requestFunction.call();
-
-					// Update usage counter
-					this.usedBits += response.get("result").getAsJsonObject().get("bitsUsed").getAsInt();
-					this.usedRequests++;
 					
 					this.processFunction.setInput(response);
 					this.queue.offer(this.processFunction.call());
+					
+					// update usage counters
+					this.usedBits += response.get("result").getAsJsonObject().get("bitsUsed").getAsInt();
+					this.usedRequests++;
 
 				} catch (Exception e) {
 					// Don't handle failures from requestFunction(), Just try again later.
@@ -218,6 +219,22 @@ public class RandomOrgCache<T> {
 		}
 	}
 	
+	/** Return <code>true</code> if cache is currently not re-populating itself.
+	 ** <p>
+	 ** Values currently cached may still be retrieved with <code>get()</code>,
+	 ** but no new values are being fetched from the server.
+	 ** <p>
+	 ** This state can be changed with <code>stop()</code> and <code>resume()</code>.
+	 ** 
+	 ** @see #stop()
+	 ** @see #resume()
+	 ** 
+	 ** @return <code>true</code> if cache is currently not re-populating itself.
+	 **/
+	public boolean isPaused() {
+		return this.paused;
+	}
+	
 	/** Get next response.
 	 **
 	 ** @return next appropriate response for the request this RandomOrgCache represents 
@@ -231,26 +248,26 @@ public class RandomOrgCache<T> {
 		}
 	}
 	
-	/**
-	 ** Get next response or wait until the next value is available.
+	/** Get next response or wait until the next value is available.
 	 ** <p>
-	 ** This method will block if the local cache is empty until it gets refilled.
+	 ** This method will block until a value is available.
 	 ** <p>
-	 ** Note: if the fetching thread is paused this method call can result in a dead lock.
+	 ** Note: if the cache is paused or no more randomness is available from the server this call can result in a dead lock.
 	 ** 
 	 ** @see #isPaused()
-	 ** @return next response
-	 ** @throws InterruptedException if any thread interrupted the current
-	 ** thread before or while the current thread was waiting for a
-	 ** notification. The interrupted status of the current thread is cleared
-	 ** when this exception is thrown.
+	 ** 
+	 ** @return next appropriate response for the request this RandomOrgCache represents
+	 **
+	 ** @throws InterruptedException if any thread interrupted the current thread before or 
+	 ** while the current thread was waiting for a notification. The interrupted status of 
+	 ** the current thread is cleared when this exception is thrown.
 	 */
 	public T getOrWait() throws InterruptedException {
 				
-		// get result or wait for it
+		// get result or wait
 		T result = this.queue.take();
 
-		// lets check if cache can be refilled
+		// notify cache - check if refill is needed
 		synchronized (this.lock) {
 			this.lock.notify();
 		}
@@ -258,53 +275,30 @@ public class RandomOrgCache<T> {
 		return result;
 	}
 	
-	/**
-	 ** Get the number of used bits by this cache.
-	 ** 
-	 ** @return number of used bits
-	 */
-	public long getUsedBits() {
-		return this.usedBits;
-	}
-	
-	/**
-	 ** Get the number of used requests by this cache.
-	 ** 
-	 ** @return number of used requests
-	 */
-	public long getUsedRequests() {
-		return this.usedRequests;
-	}
-	
-	/**
-	 ** Get number of current values in the cache.
+	/** Get number of results of type {@link #T} remaining in the cache.
 	 ** <p>
-	 ** This method returns how many values are currently stored in the local cache.
-	 ** A value has the type of the class parameter {@link #T}, its maybe a array.
-	 ** Effectively this method returns how often <code>get()</code> can be called
-	 ** without the need of a buffer refill. Or <code>getOrWait()</code> can be called
-	 ** without blocking.
+	 ** This essentially returns how often <code>get()</code> may be called without a cache refill,
+	 ** or <code>getOrWait()</code> may be called without blocking.
 	 ** 
-	 ** @return number of buffered values
-	 */
+	 ** @return current number of cached results
+	 **/
 	public int getCachedValues() {
 		return this.queue.size();
 	}
 	
-	/**
-	 ** Gets if refill thread of this cache is paused.
-	 ** <p>
-	 ** If this method returns <code>true</code> the cache will be not refilled with new values.
-	 ** Nevertheless, the current cached values can be get.
-	 ** <p>
-	 ** This state can be changed with <code>stop()</code> and <code>resume()</code>.
+	/** Get number of bits used by this cache.
 	 ** 
-	 ** @see #stop()
-	 ** @see #resume()
+	 ** @return number of used bits
+	 **/
+	public long getUsedBits() {
+		return this.usedBits;
+	}
+	
+	/** Get number of requests used by this cache.
 	 ** 
-	 ** @return <code>true</code> if the refill thread is paused
-	 */
-	public boolean isPaused() {
-		return this.paused;
+	 ** @return number of used requests
+	 **/
+	public long getUsedRequests() {
+		return this.usedRequests;
 	}
 }
