@@ -8,7 +8,7 @@ This is a Java implementation of the RANDOM.ORG JSON-RPC API (R1). It provides e
 Installation
 ------------
 
-Requires the `gson <https://code.google.com/p/google-gson/>`_ lib for normal operation, and the `junit <http://junit.org/>`_ lib to run tests.
+Requires the `gson <https://code.google.com/p/google-gson/>`_ lib and `Commons Codec <http://commons.apache.org/proper/commons-codec/>`_ lib for normal operation, and the `junit <http://junit.org/>`_ lib to run tests.
 
 Usage
 -----
@@ -71,6 +71,17 @@ Finally, it is possible to request live results as-soon-as-possible and without 
 	} catch (...) { ... }
 	
 	[8, 10, 10, 4, 0]
+
+This library now also includes a RANDOM.ORG implementation of the `java.util.Random` class via `RandomOrgRandom`. Usage of supplied methods is similar to `java.util.Random`, with true random numbers returned or a `java.util.NoSuchElementException` exception thrown if true randomness is unavailable.
+
+.. code-block:: java
+
+	RandomOrgRandom ror = new RandomOrgRandom(YOUR_API_KEY_HERE);
+	try {
+		System.out.println(ror.nextInt(10));
+	} catch (NoSuchElementException e) { /* fallback */ }
+	
+	6
 
 Documentation
 -------------
