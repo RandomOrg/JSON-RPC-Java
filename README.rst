@@ -72,21 +72,16 @@ Finally, it is possible to request live results as-soon-as-possible and without 
 	
 	[8, 10, 10, 4, 0]
 
-There is even a very simple way to get random numbers with the `RandomOrgRandom`.
-
-You can use it like a normal `java.util.Random` but you'll get true random numbers.
-
-This class manages the most stuff you need to get connected to RANDOM.ORG you only need a API-key.
+This library now also includes a RANDOM.ORG implementation of the `java.util.Random` class via `RandomOrgRandom`. Usage of supplied methods is similar to `java.util.Random`, with true random numbers returned or a `java.util.NoSuchElementException` exception thrown if true randomness is unavailable.
 
 .. code-block:: java
 
-	Random ran;
-	ran = new RandomOrgRandom(YOUR_API_KEY_HERE);
-	System.out.println(ran.nextInt(10));
-	System.out.println(ran.nextFloat());
+	RandomOrgRandom ror = new RandomOrgRandom(YOUR_API_KEY_HERE);
+	try {
+		System.out.println(ror.nextInt(10));
+	} catch (NoSuchElementException e) { /* fallback */ }
 	
 	6
-	0.6085736
 
 Documentation
 -------------
