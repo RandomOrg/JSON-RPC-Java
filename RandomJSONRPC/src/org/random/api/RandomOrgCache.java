@@ -1,7 +1,8 @@
 package org.random.api;
 
 import java.lang.reflect.Array;
-import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +30,8 @@ public class RandomOrgCache<T> {
 	
 	private JsonObject request;
 	
-	private LinkedList<T> queue = new LinkedList<T>();
+	// thread-safe queue to store the cached values
+	private BlockingQueue<T> queue = new LinkedBlockingQueue<T>();
 	private int cacheSize;
 	
 	private int bulkRequestNumber, requestNumber, requestSize;
@@ -37,6 +39,12 @@ public class RandomOrgCache<T> {
 	// lock to allow notification when an item is consumed or pause state is updated.
 	private Object lock = new Object();
 	private boolean paused = false;
+	
+	// counter of bits already used by this cache
+	private long usedBits = 0;
+	
+	// counter of requests already used by this cache
+	private long usedRequests = 0;
 	
 	private static final Logger LOGGER = Logger.getLogger(RandomOrgClient.class.getPackage().getName());
 
@@ -90,6 +98,7 @@ public class RandomOrgCache<T> {
 	protected void populateQueue() {
 		while (true) {
 			synchronized (this.lock) {
+				
 				if (this.paused) {
 					try {
 						this.lock.wait();
@@ -109,6 +118,10 @@ public class RandomOrgCache<T> {
 					try {
 						this.requestFunction.setInput(request);
 						JsonObject response = this.requestFunction.call();
+						
+						// Update usage counter
+						this.usedBits += response.get("result").getAsJsonObject().get("bitsUsed").getAsInt();
+						this.usedRequests++;
 						
 						this.processFunction.setInput(response);
 						T result = this.processFunction.call();
@@ -164,6 +177,10 @@ public class RandomOrgCache<T> {
 				try {
 					this.requestFunction.setInput(request);
 					JsonObject response = this.requestFunction.call();
+
+					// Update usage counter
+					this.usedBits += response.get("result").getAsJsonObject().get("bitsUsed").getAsInt();
+					this.usedRequests++;
 					
 					this.processFunction.setInput(response);
 					this.queue.offer(this.processFunction.call());
@@ -198,7 +215,7 @@ public class RandomOrgCache<T> {
 		synchronized (this.lock) {
 			this.paused = false;
 			this.lock.notify();
-		}		
+		}
 	}
 	
 	/** Get next response.
@@ -208,9 +225,86 @@ public class RandomOrgCache<T> {
 	 **/
 	public T get() {
 		synchronized (this.lock) {
-			T result = this.queue.pop();
+			T result = this.queue.remove();
 			this.lock.notify();
 			return result;
 		}
-	}	
+	}
+	
+	/**
+	 ** Get next response or wait until the next value is available.
+	 ** <p>
+	 ** This method will block if the local cache is empty until it gets refilled.
+	 ** <p>
+	 ** Note: if the fetching thread is paused this method call can result in a dead lock.
+	 ** 
+	 ** @see #isPaused()
+	 ** @return next response
+	 ** @throws InterruptedException if any thread interrupted the current
+	 ** thread before or while the current thread was waiting for a
+	 ** notification. The interrupted status of the current thread is cleared
+	 ** when this exception is thrown.
+	 */
+	public T getOrWait() throws InterruptedException {
+				
+		// get result or wait for it
+		T result = this.queue.take();
+
+		// lets check if cache can be refilled
+		synchronized (this.lock) {
+			this.lock.notify();
+		}
+		
+		return result;
+	}
+	
+	/**
+	 ** Get the number of used bits by this cache.
+	 ** 
+	 ** @return number of used bits
+	 */
+	public long getUsedBits() {
+		return this.usedBits;
+	}
+	
+	/**
+	 ** Get the number of used requests by this cache.
+	 ** 
+	 ** @return number of used requests
+	 */
+	public long getUsedRequests() {
+		return this.usedRequests;
+	}
+	
+	/**
+	 ** Get number of current values in the cache.
+	 ** <p>
+	 ** This method returns how many values are currently stored in the local cache.
+	 ** A value has the type of the class parameter {@link #T}, its maybe a array.
+	 ** Effectively this method returns how often <code>get()</code> can be called
+	 ** without the need of a buffer refill. Or <code>getOrWait()</code> can be called
+	 ** without blocking.
+	 ** 
+	 ** @return number of buffered values
+	 */
+	public int getCachedValues() {
+		return this.queue.size();
+	}
+	
+	/**
+	 ** Gets if refill thread of this cache is paused.
+	 ** <p>
+	 ** If this method returns <code>true</code> the cache will be not refilled with new values.
+	 ** Nevertheless, the current cached values can be get.
+	 ** <p>
+	 ** This state can be changed with <code>stop()</code> and <code>resume()</code>.
+	 ** 
+	 ** @see #stop()
+	 ** @see #resume()
+	 ** 
+	 ** @return <code>true</code> if the refill thread is paused
+	 */
+	public boolean isPaused() {
+		return this.paused;
+	}
 }

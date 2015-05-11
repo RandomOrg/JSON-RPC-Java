@@ -39,7 +39,7 @@ import org.random.api.exception.RandomOrgSendTimeoutException;
  ** @see https://random.org/
  ** @see https://api.random.org/
  ** 
- ** @author Adam Wagenhäuser
+ ** @author Adam Wagenhaeuser <adam@wag-web.de>
  **/
 public class RandomOrgRandom extends Random {
 
