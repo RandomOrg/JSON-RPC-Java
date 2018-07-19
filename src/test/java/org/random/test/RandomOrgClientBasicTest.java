@@ -26,7 +26,7 @@ public class RandomOrgClientBasicTest {
 	private static final String API_KEY_1 = System.getenv("API_KEY");
 	private static final String API_KEY_2 = "00000000-0000-0000-0000-000000000000";
 	
-	private static final int BIT_QUOTA = 1000000;
+	private static final int BIT_QUOTA = 5000000; // Must be for the highest tier
 	
 	@BeforeClass
 	public static void testSetup() {
