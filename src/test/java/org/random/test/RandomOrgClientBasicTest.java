@@ -23,8 +23,8 @@ public class RandomOrgClientBasicTest {
 	
 	private static RandomOrgClient roc, roc2;
 	
-	private static final String API_KEY_1 = "YOUR_API_KEY_HERE";
-	private static final String API_KEY_2 = "YOUR_API_KEY_HERE";
+	private static final String API_KEY_1 = System.getenv("API_KEY");
+	private static final String API_KEY_2 = "00000000-0000-0000-0000-000000000000";
 	
 	private static final int BIT_QUOTA = 1000000;
 	
