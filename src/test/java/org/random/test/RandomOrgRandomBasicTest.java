@@ -14,7 +14,7 @@ public class RandomOrgRandomBasicTest {
 	
 	private static RandomOrgRandom random;
 
-	private static final String API_KEY_1 = "YOUR_API_KEY_HERE";
+	private static final String API_KEY_1 = System.getenv("API_KEY");
 	
 	@BeforeClass
 	public static void testSetup() {
