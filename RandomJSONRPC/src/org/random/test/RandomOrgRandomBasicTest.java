@@ -8,8 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.random.util.RandomOrgRandom;
 
-/** A set of tests for RandomOrgRandom.java
- **/
+/** A set of tests for RandomOrgRandom.java */
 public class RandomOrgRandomBasicTest {
 	
 	private static RandomOrgRandom random;
@@ -29,7 +28,8 @@ public class RandomOrgRandomBasicTest {
 			assertTrue(i >= 0);
 			assertTrue(i < 10);
 		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+			Assert.fail("Networking error: " + e.getClass().getName() 
+					+ ":" + e.getMessage());
 		}
 	}
 }

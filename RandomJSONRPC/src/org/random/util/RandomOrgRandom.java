@@ -20,31 +20,30 @@ import org.random.api.exception.RandomOrgKeyNotRunningError;
 import org.random.api.exception.RandomOrgRANDOMORGError;
 import org.random.api.exception.RandomOrgSendTimeoutException;
 
-/** A partial implementation of {@link Random} using RANDOM.ORG for true RNG.
- ** <p>
- ** This implements a true random number generator based on the RANDOM.ORG service.
- ** For more information see <code>https://api.random.org/</code>.
- ** <p>
- ** This class offers cached number retrieving from the random.org server over the official API.
- ** The cached numbers can be accessed bit wise by the typical public methods of the random class.
- ** If more bits are requested than currently cached the methods will block until more data is 
- ** retrieved from the server.
- ** <p>
- ** To use this class a official API key from <code>https://api.random.org/api-keys</code> is required.
- ** <p>
- ** By default this caches a maximum of 512 bits in two blobs of 256 bits each.
- ** To optimize the cache for your needs you can setup the cache size (number of blobs) and 
- ** cache bits (number of bits per blob) on creation of an instance.
- ** 
- ** @see https://random.org/
- ** @see https://api.random.org/
- ** 
- ** @author Adam Wagenhaeuser <adam@wag-web.de>
- **/
+/** 
+ * A partial implementation of {@link Random} using RANDOM.ORG for true RNG.
+ * <p>
+ * This implements a true random number generator based on the RANDOM.ORG service.
+ * For more information see <code>https://api.random.org/</code>.
+ * <p>
+ * This class offers cached number retrieving from the random.org server over the official API.
+ * The cached numbers can be accessed bit wise by the typical public methods of the random class.
+ * If more bits are requested than currently cached the methods will block until more data is 
+ * retrieved from the server.
+ * <p>
+ * To use this class a official API key from <code>https://api.random.org/api-keys</code> is required.
+ * <p>
+ * By default this caches a maximum of 512 bits in two blobs of 256 bits each.
+ * To optimize the cache for your needs you can setup the cache size (number of blobs) and 
+ * cache bits (number of bits per blob) on creation of an instance.
+ * 
+ * @see https://random.org/
+ * @see https://api.random.org/
+ * 
+ * @author Adam Wagenhaeuser <adam@wag-web.de>
+ */
 public class RandomOrgRandom extends Random {
 
-	/**
-	 **/
 	private static final long serialVersionUID = 4785372106424073371L;
 	
 	/** integer bit masks */
@@ -84,21 +83,19 @@ public class RandomOrgRandom extends Random {
 		0xFFFFFFFF,
 	};
 
-	/** Default cache size is 256.
-	 **/
+	/** Default cache size is 256. */
 	private static final int DEFAULT_CACHE_BITS = 256;
 
-	/** Default cache number is 2.
-	 **/
+	/** Default cache number is 2. */
 	private static final int DEFAULT_CACHE_SIZE = 2;
 
-	/** Cache bits - number of bits to cache per blob.
-	 **
-	 ** Must be within the [1,1048576] range and must be divisible by 8.
-	 ** This will be automatically enforced (rounded up unless too large).
-	 **
-	 ** Default is 256.
-	 **/
+	/* Cache bits - number of bits to cache per blob.
+	 *
+	 * Must be within the [1,1048576] range and must be divisible by 8.
+	 * This will be automatically enforced (rounded up unless too large).
+	 *
+	 * Default is 256.
+	 */
 	private int cacheBits;
 	
 	/** Cache size - number of blobs to cache.
@@ -108,25 +105,27 @@ public class RandomOrgRandom extends Random {
 	 **/
 	private int cacheSize;
 
-	/** The local RANDOM.ORG blob cache.
-	 ** <p>
-	 ** This stores up to {@link #cacheSize}*{@link #cacheBits} values.
-	 **/
+	/** 
+	 * The local RANDOM.ORG blob cache.
+	 * <p>
+	 * This stores up to {@link #cacheSize}*{@link #cacheBits} values.
+	 */
 	private RandomOrgCache<String[]> cache;
 
-	/** The current blob from which random numbers are being pulled.
-	 ** Once blob is in use it is removed from the blob cache.
-	 **/
+	/** 
+	 * The current blob from which random numbers are being pulled.
+	 * Once blob is in use it is removed from the blob cache.
+	 */
 	private byte[] currentBlob;
 	
-	/** Next index into the currently active blob.
-	 **/
+	/** Next index into the currently active blob. */
 	private int currentBlobIndex;
 	
-	/** The RANDOM.ORG client used for the cache.
-	 ** 
-	 ** @see #cache 
-	 **/
+	/** 
+	 * The RANDOM.ORG client used for the cache.
+	 * 
+	 * @see #cache 
+	 */
 	private RandomOrgClient client;
 	
 	/** Left to right bit buffer for getting less than 8 bits.
@@ -143,41 +142,43 @@ public class RandomOrgRandom extends Random {
 
 	private static final Logger LOGGER = Logger.getLogger(RandomOrgClient.class.getPackage().getName());
 
-	/** Create a new RandomOrgRandom instance for the given API key.
-	 ** <p>
-	 ** This RandomOrgRandom needs an official API key for the RANDOM.ORG API.
-	 ** See https://api.random.org/api-keys for more details.
-	 ** <p>
-	 ** The RANDOM.ORG library guarantees only one client is running per API key at any 
-	 ** given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
-	 ** with the same API key if needed.
-	 ** 
-	 ** @param apiKey a RANDOM.ORG API key
-	 **/
+	/** 
+	 * Constructor. Create a new RandomOrgRandom instance for the given API key.
+	 * <p>
+	 * This RandomOrgRandom needs an official <a href="https://api.random.org/api-keys">API key</a> 
+	 * for the RANDOM.ORG API.
+	 * <p>
+	 * The RANDOM.ORG library guarantees only one client is running per API key at any 
+	 * given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
+	 * with the same API key if needed.
+	 * 
+	 * @param apiKey a RANDOM.ORG API key
+	 */
 	public RandomOrgRandom(String apiKey) {
 		this(apiKey, DEFAULT_CACHE_SIZE, DEFAULT_CACHE_BITS);
 	}
 	
-	/** Create a new RandomOrgRandom instance for the given API key and cache size.
-	 ** <p>
-	 ** This RandomOrgRandom needs an official API key for the RANDOM.ORG API.
-	 ** See https://api.random.org/api-keys for more details.
-	 ** <p>
-	 ** The <code>cacheSize</code> specifies the number of blobs maintained by a background thread.
-	 ** If you set the value too high it may consume much of your daily allowance on the server.
-	 ** It the value is too low your application may block frequently. The default value is 2.
-	 ** <p>
-	 ** The <code>cacheBits</code> parameter specifies the number of bits per blob in the cache.
-	 ** If you set the value too high it may consume much of your daily allowance on the server.
-	 ** It the value is too low your application will block frequently. The default value is 256.
-	 ** <p>
-	 ** The RANDOM.ORG library guarantees only one client is running per API key at any 
-	 ** given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
-	 ** with the same API key if needed.
-	 ** 
-	 ** @param apiKey a RANDOM.ORG API key
-	 ** @param cacheSize the desired cache size
-	 **/
+	/** 
+	 * Constructor. Create a new RandomOrgRandom instance for the given API key and cache size.
+	 * <p>
+	 * This RandomOrgRandom needs an official <a href="https://api.random.org/api-keys">API key</a> 
+	 * for the RANDOM.ORG API.
+	 * <p>
+	 * The RANDOM.ORG library guarantees only one client is running per API key at any 
+	 * given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
+	 * with the same API key if needed.
+	 * 
+	 * @param apiKey a RANDOM.ORG API key
+	 * @param cacheSize number of blobs to cache. If you set the value too high it may consume 
+	 *        much of your daily allowance on the server. It the value is too low your application 
+	 *        may block frequently. Cache size minimum is 2, which will be automatically enforced 
+	 *        (default 2).
+	 * @param cacheBits number of bits to cache per blob. If you set the value too high it may 
+	 *        consume much of your daily allowance on the server. It the value is too low your 
+	 *        application will block frequently. Must be within the [1,1048576] range and must be 
+	 *        divisible by 8. This will be automatically enforced (rounded up unless too large; 
+	 *        default 256).
+	 */
 	public RandomOrgRandom(String apiKey, int cacheSize, int cacheBits) {
 		
 		this.cacheSize = cacheSize;
@@ -192,39 +193,41 @@ public class RandomOrgRandom extends Random {
 		this.cache = this.client.createBlobCache(1, cacheBits, RandomOrgClient.BLOB_FORMAT_BASE64, cacheSize);
 	}
 
-	/** Create a new RandomOrgRandom using the given client.
-	 ** <p>
-	 ** This RandomOrgRandom needs a RANDOM.ORG client instance for the random.org API.
-	 ** <p>
-	 ** The RANDOM.ORG library guarantees only one client is running per API key at any 
-	 ** given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
-	 ** with the same API key if needed.
-	 ** 
-	 ** @param client the RANDOM.ORG client to use
-	 **/
+	/** 
+	 * Constructor. Create a new RandomOrgRandom using the given client.
+	 * <p>
+	 * This RandomOrgRandom needs a RANDOM.ORG client instance for the random.org API.
+	 * <p>
+	 * The RANDOM.ORG library guarantees only one client is running per API key at any 
+	 * given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
+	 * with the same API key if needed.
+	 * 
+	 * @param client the RANDOM.ORG client to use
+	 */
 	public RandomOrgRandom(RandomOrgClient client) {
 		this(client, DEFAULT_CACHE_SIZE, DEFAULT_CACHE_BITS);
 	}
 	
-	/** Create a new RandomOrgRandom using the given client and cache size.
-	 ** <p>
-	 ** This RandomOrgRandom needs a RANDOM.ORG client instance for the random.org API.
-	 ** <p>
-	 ** The <code>cacheSize</code> specifies the number of blobs maintained by a background thread.
-	 ** If you set the value too high it may consume much of your daily allowance on the server.
-	 ** It the value is too low your application may block frequently. The default value is 2.
-	 ** <p>
-	 ** The <code>cacheBits</code> parameter specifies the number of bits per blob in the cache.
-	 ** If you set the value too high it may consume much of your daily allowance on the server.
-	 ** It the value is too low your application will block frequently. The default value is 256.
-	 ** <p>
-	 ** The RANDOM.ORG library guarantees only one client is running per API key at any 
-	 ** given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
-	 ** with the same API key if needed.
-	 ** 
-	 ** @param client the RANDOM.ORG client to use
-	 ** @param cacheSize the desired cache size
-	 **/
+	/** 
+	 * Constructor. Create a new RandomOrgRandom using the given client and cache size.
+	 * <p>
+	 * This RandomOrgRandom needs a RANDOM.ORG client instance for the random.org API.
+	 * <p>
+	 * The RANDOM.ORG library guarantees only one client is running per API key at any 
+	 * given time, so it's safe to create multiple <code>RandomOrgRandom</code> classes
+	 * with the same API key if needed.
+	 * 
+	 * @param client the RANDOM.ORG client to use
+	 * @param cacheSize number of blobs to cache. If you set the value too high it may consume 
+	 *        much of your daily allowance on the server. It the value is too low your application 
+	 *        may block frequently. Cache size minimum is 2, which will be automatically enforced 
+	 *        (default 2).
+	 * @param cacheBits number of bits to cache per blob. If you set the value too high it may 
+	 *        consume much of your daily allowance on the server. It the value is too low your 
+	 *        application will block frequently. Must be within the [1,1048576] range and must be 
+	 *        divisible by 8. This will be automatically enforced (rounded up unless too large; 
+	 *        default 256).
+	 */
 	public RandomOrgRandom(RandomOrgClient client, int cacheSize, int cacheBits) {
 		this.client = client;
 		this.cacheSize = cacheSize;
@@ -236,29 +239,30 @@ public class RandomOrgRandom extends Random {
 		this.cache = this.client.createBlobCache(1, cacheBits, RandomOrgClient.BLOB_FORMAT_BASE64, cacheSize);
 	}
 	
-	/** Gets the remaining quota for the used key.
-	 ** <p>
-	 ** This method gets the bit count still retrievable from the
-	 ** server. If this value is negative no more bits can be retrieved.
-	 ** <p>
-	 ** Note that this method will access a buffered value if that value is not too 
-	 ** old, so the returned value can be different from the value on the server.
-	 ** <p>
-	 ** Note that this value does not contain the local cached bits, so the current
-	 ** local available bit count can be larger than the return of this method.
-	 ** 
-	 ** @return the remaining bit quota
-	 **
-	 ** @throws RandomOrgSendTimeoutException @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws RandomOrgKeyNotRunningError @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws RandomOrgInsufficientRequestsError @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws RandomOrgInsufficientBitsError @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws RandomOrgBadHTTPResponseException @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws RandomOrgRANDOMORGError @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws RandomOrgJSONRPCError @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws MalformedURLException @see {@link RandomOrgClient#getBitsLeft()}
-	 ** @throws IOException @see {@link RandomOrgClient#getBitsLeft()}
-	 **/
+	/** 
+	 * Gets the remaining quota for the used key.
+	 * <p>
+	 * This method gets the bit count still retrievable from the
+	 * server. If this value is negative no more bits can be retrieved.
+	 * <p>
+	 * Note that this method will access a buffered value if that value is not too 
+	 * old, so the returned value can be different from the value on the server.
+	 * <p>
+	 * Note that this value does not contain the local cached bits, so the current
+	 * local available bit count can be larger than the return of this method.
+	 * 
+	 * @return the remaining bit quota
+	 *
+	 * @throws RandomOrgSendTimeoutException @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws RandomOrgKeyNotRunningError @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws RandomOrgInsufficientRequestsError @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws RandomOrgInsufficientBitsError @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws RandomOrgBadHTTPResponseException @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws RandomOrgRANDOMORGError @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws RandomOrgJSONRPCError @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws MalformedURLException @see {@link RandomOrgClient#getBitsLeft()}
+	 * @throws IOException @see {@link RandomOrgClient#getBitsLeft()}
+	 */
 	public long getRemainingQuota() throws RandomOrgSendTimeoutException,
 										   RandomOrgKeyNotRunningError,
 										   RandomOrgInsufficientRequestsError, 
@@ -271,35 +275,37 @@ public class RandomOrgRandom extends Random {
 		return this.client.getBitsLeft();
 	}
 	
-	/** Returns the size of the local cache.
-	 ** <p>
-	 ** This size can be specified in the constructor. 
-	 ** 
-	 ** @return the size of the cache.
-	 **/
+	/**
+	 * Returns the size of the local cache.
+	 * <p>
+	 * This size can be specified in the constructor. 
+	 * 
+	 * @return the size of the cache.
+	 */
 	public int getCachSize() {
 		return this.cacheSize;
 	}
 
-	/** Returns the size of each blob in the cache in bits.
-	 ** <p>
-	 ** This size can be specified in the constructor. 
-	 ** 
-	 ** @return the number of bits per blob in the cache.
-	 **/
+	/**
+	 * Returns the size of each blob in the cache in bits.
+	 * <p>
+	 * This size can be specified in the constructor. 
+	 * 
+	 * @return the number of bits per blob in the cache.
+	 */
 	public int getCachBits() {
 		return this.cacheBits;
 	}
 	
-	/** Blocking implementation of {@link java.util.Random#nextInt(int)} using RANDOM.ORG's RNG service.
-	 ** 
-	 ** @see java.util.Random#nextInt(int)
-	 **
-	 ** @throws NoSuchElementException if a number couldn't be retrieved.
-	 **/
+	/**
+	 * Blocking implementation of {@link java.util.Random#nextInt(int)} using RANDOM.ORG's RNG service.
+	 * 
+	 * @see java.util.Random#nextInt(int)
+	 *
+	 * @throws NoSuchElementException if a number couldn't be retrieved.
+	 */
 	@Override
-	public int nextInt(int n) {
-		
+	public int nextInt(int n) {		
 		if (n <= 0) {
 			throw new IllegalArgumentException("n must be positive");			
 		}
@@ -334,15 +340,15 @@ public class RandomOrgRandom extends Random {
 		return r;
 	}
 
-	/** Blocking implementation of {@link java.util.Random#next(int)} using RANDOM.ORG's RNG service.
-	 ** 
-	 ** @see java.util.Random#next(int)
-	 **
-	 ** @throws NoSuchElementException if a number couldn't be retrieved.
-	 **/
+	/**
+	 * Blocking implementation of {@link java.util.Random#next(int)} using RANDOM.ORG's RNG service.
+	 * 
+	 * @see java.util.Random#next(int)
+	 *
+	 * @throws NoSuchElementException if a number couldn't be retrieved.
+	 */
 	@Override
-	public synchronized int next(int bits) {
-		
+	public synchronized int next(int bits) {		
 		// how many full bytes to read
 		int sz = bits / 8;
 		
@@ -386,30 +392,31 @@ public class RandomOrgRandom extends Random {
 		return num;
 	}
 	
-	/** Gets the given count of random bits.
-	 ** <p>
-	 ** Note: for standard retrieval of bits use the <code>next(int)</code> method.
-	 ** <p>
-	 ** <code>numBits</code> must be in the range of <code>1</code> to <code>7</code> inclusive.
-	 ** <p>
-	 ** This method will return <code>numBits</code> bits as an 8 bit byte value.
-	 ** The random bits are stored in the least significant bits and the most significant bits are filled with zeros.
-	 ** All random numbers are in the range of <code>0</code> to <code>2^numBits - 1</code> inclusive.
-	 ** <pre>
-	 ** Example getting 4 bits:
-	 ** 
-	 ** int ranBits = getSubBits(4) & 0x0F
-	 ** </pre> 
-	 ** 
-	 ** @param numBits number of bits to fetch
-	 **
-	 ** @return a byte containing the requested number of random bits
-	 **
-	 ** @see #next(int)
-	 **
-	 ** @throws IllegalArgumentException if the number of bits requested is not between 1 and 7 inclusive
-	 ** @throws NoSuchElementException if a number couldn't be retrieved.
-	 **/
+	/** 
+	 * Gets the given count of random bits.
+	 * <p>
+	 * Note: for standard retrieval of bits use the <code>next(int)</code> method.
+	 * <p>
+	 * <code>numBits</code> must be in the range of <code>1</code> to <code>7</code> inclusive.
+	 * <p>
+	 * This method will return <code>numBits</code> bits as an 8 bit byte value.
+	 * The random bits are stored in the least significant bits and the most significant bits are filled with zeros.
+	 * All random numbers are in the range of <code>0</code> to <code>2^numBits - 1</code> inclusive.
+	 * <pre>
+	 * Example getting 4 bits:
+	 * 
+	 * int ranBits = getSubBits(4) & 0x0F
+	 * </pre> 
+	 * 
+	 * @param numBits number of bits to fetch
+	 *
+	 * @return a byte containing the requested number of random bits
+	 *
+	 * @see #next(int)
+	 *
+	 * @throws IllegalArgumentException if the number of bits requested is not between 1 and 7 inclusive
+	 * @throws NoSuchElementException if a number couldn't be retrieved.
+	 */
 	protected synchronized byte getSubBits(int numBits) {
 		
 		if (numBits < 1 || 7 < numBits) {
@@ -447,12 +454,12 @@ public class RandomOrgRandom extends Random {
 		return b;
 	}
 	
-	/** Gets the next blob from the cache.
-	 **
-	 ** @throws NoSuchElementException if a blob couldn't be retrieved.
-	 **/
-	private synchronized void moveToNextBlob() throws NoSuchElementException {
-		
+	/**
+	 * Gets the next blob from the cache.
+	 *
+	 * @throws NoSuchElementException if a blob couldn't be retrieved.
+	 */
+	private synchronized void moveToNextBlob() throws NoSuchElementException {		
 		String blob = null;
 		
 		try {
@@ -467,29 +474,11 @@ public class RandomOrgRandom extends Random {
 						if (getRemainingQuota() <= 0) {
 							throw e;
 						}
-					} catch (RandomOrgKeyNotRunningError e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
+					} catch (Exception e1) {
+						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " 
+							+ e1.getClass().getName() + ": " + e1.getMessage());
 						throw e;
-					} catch (RandomOrgInsufficientRequestsError e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-						throw e;
-					} catch (RandomOrgInsufficientBitsError e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-						throw e;
-					} catch (MalformedURLException e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-						throw e;
-					} catch (RandomOrgSendTimeoutException e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-					} catch (RandomOrgBadHTTPResponseException e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-					} catch (RandomOrgRANDOMORGError e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-					} catch (RandomOrgJSONRPCError e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-					} catch (IOException e1) {
-						LOGGER.log(Level.INFO, "RandomOrgRandom moveToNextBlob Exception: " + e1.getClass().getName() + ": " + e1.getMessage());
-					}
+					} 
 				}
 				
 				if (blob == null) {
@@ -508,20 +497,22 @@ public class RandomOrgRandom extends Random {
 		}
 	}
 	
-	/** Return true if n is a power of 2.
-	 ** 
-	 ** @param n to evaluate
-	 ** @return true if n is a power of 2
-	 **/
+	/**
+	 * Return true if n is a power of 2.
+	 * 
+	 * @param n to evaluate
+	 * @return true if n is a power of 2
+	 */
 	private boolean isPow2(int n) {
 		return n == 0 ? false : (n & (n - 1)) == 0;
 	}
 	
-	/** Return next power of 2 greater than n.
-	 ** 
-	 ** @param n to evaluate
-	 ** @return next power of 2 greater than n.
-	 **/
+	/** 
+	 * Return next power of 2 greater than n.
+	 * 
+	 * @param n to evaluate
+	 * @return next power of 2 greater than n.
+	 */
 	private int nextPow2(int n) {
 		int v = n;
 		v--;
@@ -534,13 +525,13 @@ public class RandomOrgRandom extends Random {
         return v;
 	}
 
-	/** Log2 of n.
-	 ** 
-	 ** @param n to evaluate - should be a power of 2.
-	 ** @return Log2 of n
-	 **/
-	private int log2(int n) {
-		
+	/** 
+	 * Log2 of n.
+	 * 
+	 * @param n to evaluate - should be a power of 2.
+	 * @return Log2 of n
+	 */
+	private int log2(int n) {		
 	    int log = 0;
 	    
 	    if ((n & 0xffff0000) != 0 ) {

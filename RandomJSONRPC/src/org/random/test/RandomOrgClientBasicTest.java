@@ -1,78 +1,93 @@
 package org.random.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 import org.random.api.RandomOrgCache;
 import org.random.api.RandomOrgClient;
 import org.random.api.exception.RandomOrgRANDOMORGError;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-/** A set of tests for RandomOrgClient.java
- ** @author Anders Haahr
- **/
+import static org.hamcrest.Matchers.*;
+
+/** 
+ * A set of tests for RandomOrgClient.java
+ */
 public class RandomOrgClientBasicTest {
 	
-	private static RandomOrgClient roc, roc2;
+	@Rule
+	public ErrorCollector collector = new ErrorCollector();
+	
+	private static RandomOrgClient[] rocs = new RandomOrgClient[2];
 	
 	private static final String API_KEY_1 = "YOUR_API_KEY_HERE";
 	private static final String API_KEY_2 = "YOUR_API_KEY_HERE";
 	
 	private static final int BIT_QUOTA = 1000000;
 	
+	private static final int[] LENGTH = {3, 4, 5, 6};
+	private static final int[] MIN = {0, 10, 20, 30};
+	private static final int[] MAX = {40, 50, 60, 70};
+	private static final boolean[] REPLACEMENT = {false, true, false, true};
+	private static final int[] BASE = {2, 8, 10, 16};
+	
+	private static JsonObject userData = new JsonObject();
+	
 	@BeforeClass
 	public static void testSetup() {
-		roc = RandomOrgClient.getRandomOrgClient(API_KEY_1, 3000, 120000, false);
-		roc2 = RandomOrgClient.getRandomOrgClient(API_KEY_2);
+		rocs[0] = RandomOrgClient.getRandomOrgClient(API_KEY_1, 5000, 120000, false);
+		rocs[1] = RandomOrgClient.getRandomOrgClient(API_KEY_2);
+		
+		userData.addProperty("Test", "Text");
+		userData.addProperty("Test2", "Text2");
 	}
 	
 	@Test
 	public void testInfo() {
-		try {
-			assertTrue(roc.getBitsLeft() >= 0);
-			assertTrue(roc.getRequestsLeft() >= 0);
-			
-			assertTrue(roc2.getBitsLeft() >= 0);
-			assertTrue(roc2.getRequestsLeft() >= 0);
-
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(client(i), roc.getBitsLeft(), greaterThanOrEqualTo(0));
+				collector.checkThat(client(i), roc.getRequestsLeft(), greaterThanOrEqualTo(0));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
+	
 	
 	@Test
 	public void testAPIKeyDuplication() {
 		RandomOrgClient dupe = RandomOrgClient.getRandomOrgClient(API_KEY_1);
 		
-		assertTrue(!roc.equals(roc2));
-		assertTrue(roc.equals(dupe));
+		collector.checkThat("RandomOrgClient roc1 should not be the same as "
+				+ "RandomOrgClient roc2", rocs[0].equals(rocs[1]), equalTo(false));
+		collector.checkThat("RandomOrgClient roc1 and RandomOrgClient dupe "
+				+ "should be the same", rocs[0].equals(dupe), equalTo(true));
 	}
 	
+	
 	@Test
-	public void testPositiveGetBitsLeft_1(){
-		try {
-			int bitsLeft = roc.getBitsLeft();
-			assertTrue(0 <= bitsLeft && bitsLeft <= BIT_QUOTA);
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-	}
-
-	@Test
-	public void testPositiveGetBitsLeft_2(){
-		try {
-			int bitsLeft = roc2.getBitsLeft();
-			assertTrue(0 <= bitsLeft && bitsLeft <= BIT_QUOTA);
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	public void testPositiveGetBitsLeft(){
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				int bitsLeft = roc.getBitsLeft();
+				collector.checkThat(client(i), bitsLeft, greaterThanOrEqualTo(0));
+				collector.checkThat(client(i) + i, bitsLeft, lessThanOrEqualTo(BIT_QUOTA));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
@@ -80,81 +95,81 @@ public class RandomOrgClientBasicTest {
 	
 	@Test
 	public void testNegativeErrorMessage202(){
-		try{
-			roc.generateIntegers(100000, 0, 10);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
-		}
-		try{
-			roc2.generateIntegers(100000, 0, 10);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateIntegers(100000, 0, 10);
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testNegativeErrorMessage203(){
-		try{
-			roc.generateIntegers(10, 0, 1000000001);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateIntegerSequences(3, LENGTH, MIN, MAX);
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
 		}
-		try{
-			roc2.generateIntegers(10, 0, 1000000001);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
+	}
+	
+	@Test
+	public void testNegativeErrorMessage204(){
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateIntegerSequences(4, new int[] {1}, MIN, MAX);
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testNegativeErrorMessage300(){
-		try{
-			roc.generateIntegers(10, 10, 0);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
-		}
-		try{
-			roc2.generateIntegers(10, 10, 0);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateIntegers(10, 10, 0);
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testNegativeErrorMessage301(){
-		try{
-			roc.generateIntegers(20, 0, 10, false);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
-		}
-		try{
-			roc2.generateIntegers(20, 0, 10, false);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
-		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateIntegers(20, 0, 10, false);
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
 		}
 	}
 
@@ -163,11 +178,11 @@ public class RandomOrgClientBasicTest {
 		try{
 			RandomOrgClient rpc2 = RandomOrgClient.getRandomOrgClient("ffffffff-ffff-ffff-ffff-ffffffffffff");
 			rpc2.generateIntegers(1, 0, 1);
-			Assert.fail("should have thrown RandomOrgRANDOMORGError");
+			collector.addError(new Error(errorMessage()));
 		} catch(RandomOrgRANDOMORGError e) {
 			System.out.println(e.getMessage());
 		} catch (Exception e) {
-			Assert.fail("should have thrown RandomOrgRANDOMORGError, instead threw " + e.getClass().getName());
+			collector.addError(new Error(errorMessage(e)));
 		}
 	}
 	
@@ -175,542 +190,674 @@ public class RandomOrgClientBasicTest {
 
 	@Test
 	public void testPositiveGenerateInteger_1(){
-		try {
-			assertNotNull(roc.generateIntegers(10, 0, 10));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateIntegers(10, 0, 10));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateIntgers(int n, in min, int max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegers(10, 0, 10), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testPositiveGenerateInteger_2(){
-		try {
-			assertNotNull(roc.generateIntegers(10, 0, 10, false));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateIntgers(int n, in min, int max, boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegers(10, 0, 10, false), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
-		try {
-			assertNotNull(roc2.generateIntegers(10, 0, 10, false));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	}
+	
+	@Test
+	public void testPositiveGenerateInteger_3(){
+		// Testing generateIntgers(int n, in min, int max, boolean replacement, int base)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegers(10, 0, 10, false, 16), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_1(){
+		// Testing generateIntegerSequences(int n, int length, int min, int max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegerSequences(3, 5, 0, 10), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_2(){
+		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegerSequences(3, 5, 0, 10, false), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_3(){
+		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement, int base)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegerSequences(3, 5, 0, 10, false, 16), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_4(){
+		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegerSequences(4, LENGTH, MIN, MAX), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_5(){
+		// Testing generateIntegerSequences(int n, int[] length, int[] min, 
+		//				int[] max, boolean[] replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_6(){
+		// Testing generateIntegerSequences(int n, int[] length, int[] min, 
+		//				int[] max, boolean[] replacement, int[] base)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, BASE), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateDecimalFractions_1(){
-		try {
-			assertNotNull(roc.generateDecimalFractions(10, 5));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateDecimalFractions(10, 5));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateDecimalFractions(int n, int decimalPlaces)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateDecimalFractions(10, 5), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i ++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateDecimalFractions_2(){
-		try {
-			assertNotNull(roc.generateDecimalFractions(10, 5, false));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateDecimalFractions(10, 5, false));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateDecimalFractions(int n, int decimalPlaces, boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateDecimalFractions(10, 5, false), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testPositiveGenerateGaussians(){
-		try {
-			assertNotNull(roc.generateGaussians(10, 3.41d, 2.1d, 4));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateGaussians(10, 3.41d, 2.1d, 4));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateGaussians(int n, double mean, double standardDeviation, 
+		// 				double significantDigits)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateGaussians(10, 3.41d, 2.1d, 4), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++; 
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateStrings_1(){
-		try {
-			assertNotNull(roc.generateStrings(10, 5, "abcd"));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateStrings(10, 5, "abcd"));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateStrings(int n, int length, String characters)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateStrings(10, 5, "abcd"), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testPositiveGenerateStrings_2(){
-		try {
-			assertNotNull(roc.generateStrings(10, 5, "abcd", false));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateStrings(10, 5, "abcd", false));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateStrings(int n, int length, String characters, 
+		// 				boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateStrings(10, 5, "abcd", false), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testPositiveGenerateUUIDs(){
-		try {
-			assertNotNull(roc.generateUUIDs(10));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateUUIDs(10));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateUUIDs(int n)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateUUIDs(10), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateBlobs_1(){
-		try {
-			assertNotNull(roc.generateBlobs(10, 16));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateBlobs(10, 16));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateBlobs(int n, int size)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateBlobs(10, 16), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateBlobs_2(){
-		try {
-			assertNotNull(roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			assertNotNull(roc2.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateBlobs(int n, int size, String format)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				collector.checkThat(roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX), 
+						notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	// Test Functions (Signed)
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_1(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10);
-			
-			assertNotNull(o);
-			
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-			
-			assertTrue(o.get("data").getClass().equals(int[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-			
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedIntegers(10, 0, 10);
-			
-			assertNotNull(o);
-			
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-			
-			assertTrue(o.get("data").getClass().equals(int[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-			
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	public void testPositiveGenerateSignedInteger_1() {
+		// Testing generateSignedStrings(int n, int min, int max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String, Object> o = roc.generateSignedIntegers(10, 0, 10);
+				
+				signedValueTester(roc, i, o, int[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
-
+	
 	@Test
 	public void testPositiveGenerateSignedInteger_2(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false);
-			
-			assertNotNull(o);
-			
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-			
-			assertTrue(o.get("data").getClass().equals(int[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-			
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedIntegers(10, 0, 10, false);
-			
-			assertNotNull(o);
-			
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-			
-			assertTrue(o.get("data").getClass().equals(int[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-			
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateSignedStrings(int n, int min, int max, boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false);
+				
+				signedValueTester(roc, i, o, int[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
-
+	
+	@Test
+	public void testPositiveGenerateSignedInteger_3(){
+		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
+		// 				int base, JsonObject userData) -- decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 10, userData);
+				
+				signedValueTester(roc, i, o, int[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedInteger_4(){
+		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
+		// 				int base, JsonObject userData) -- non-decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 16, userData);
+				
+				signedValueTester(roc, i, o, String[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_1(){
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10);
+				
+				signedValueTester(roc, i, o, int[][].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_2(){
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
+		// 					boolean replacement, int base, JsonObject userData)
+		// -- decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, userData);
+				
+				signedValueTester(roc, i, o, int[][].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_3(){
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
+		// 					boolean replacement, int base, JsonObject userData) 
+		// -- non-decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, userData);
+				
+				signedValueTester(roc, i, o, String[][].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_4(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX);
+				
+				signedValueTester(roc, i, o, int[][].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_5(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//					boolean[] replacement, int[] base, JsonObject userData)
+		// -- decimal
+		int[] decimalBase = {10, 10, 10, 10};
+		int i = 1;
+		
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, decimalBase, userData);
+				
+				signedValueTester(roc, i, o, int[][].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_6(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//					boolean[] replacement, int[] base, JsonObject userData)
+		// -- non-decimal
+		int i = 1;
+		
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, BASE, userData);
+				
+				signedValueTester(roc, i, o, String[][].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
 	@Test
 	public void testPositiveGenerateSignedDecimalFractions_1(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5);
+		// Testing generateSignedDecimalFractions(int n, int decimalPlaces)
+		int i = 1;
 		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(double[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedDecimalFractions(10, 5);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(double[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5);
+			
+				signedValueTester(roc, i, o, double[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateSignedDecimalFractions_2(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(double[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false);
+			
+				signedValueTester(roc, i, o, double[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedDecimalFractions(10, 5, false);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(double[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedDecimalFractions_3(){
+		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, 
+		//				boolean replacement, JsonObject userData)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false, userData);
+				
+				signedValueTester(roc, i, o, double[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
-	public void testPositiveGenerateSignedGaussians(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(double[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	public void testPositiveGenerateSignedGaussians_1(){
+		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String, Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4);
+				
+				signedValueTester(roc, i, o, double[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedGaussians(10, 3.41d, 2.1d, 4);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(double[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedGaussians_2(){
+		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, 
+		// 				int significantDigits, JsonObject userData)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String, Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, userData);
+				
+				signedValueTester(roc, i, o, double[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateSignedStrings_1(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd");
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedStrings(10, 5, "abcd");
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
+		// Testing generateSignedStrings(int n, int length, String characters)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd");
+				
+				signedValueTester(roc, i, o, String[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}		
 	}
 
 	@Test
 	public void testPositiveGenerateSignedStrings_2(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false);
+		// Testing generateSignedStrings(int n, int length, String characters, boolean replacement)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false);
 		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+				signedValueTester(roc, i, o, String[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedStrings(10, 5, "abcd", false);
+	}
+	
+	public void testPositiveGenerateSignedStrings_3(){
+		// Testing generateSignedStrings(int n, int length, String characters, 
+		//				boolean replacement, JsonObject userData)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false, userData);
 		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+				signedValueTester(roc, i, o, String[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
-	public void testPositiveGenerateSignedUUIDs(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedUUIDs(10);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(UUID[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	public void testPositiveGenerateSignedUUIDs_1(){
+		// Testing generateSignedUUIDs(int n)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedUUIDs(10);
+				
+				signedValueTester(roc, i, o, UUID[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedUUIDs(10);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(UUID[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedUUIDs_2(){
+		// Testing generateSignedUUIDs(int n, JsonObject userData)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedUUIDs(10, userData);
+				
+				signedValueTester(roc, i, o, UUID[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateSignedBlobs_1(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedBlobs(10, 16);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
-		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedBlobs(10, 16);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateSignedBlobs(int n, int size)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16);
+				
+				signedValueTester(roc, i, o, String[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	@Test
 	public void testPositiveGenerateSignedBlobs_2(){
-		try {
-			HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+		// Testing generateSignedBlobs(int n, int size, String format)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX);
+				
+				signedValueTester(roc, i, o, String[].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
-		try {
-			HashMap<String,Object> o = roc2.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX);
-		
-			assertNotNull(o);
-		
-			assertTrue(o.containsKey("data"));
-			assertTrue(o.containsKey("random"));
-			assertTrue(o.containsKey("signature"));
-		
-			assertTrue(o.get("data").getClass().equals(String[].class));
-			assertTrue(o.get("random").getClass().equals(JsonObject.class));			
-			assertTrue(o.get("signature").getClass().equals(String.class));
-		
-			assertTrue(roc.verifySignature((JsonObject)o.get("random"), (String)o.get("signature")));
-		} catch (Exception e) {
-			Assert.fail("Networking error: " + e.getClass().getName() + ":" + e.getMessage());
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedBlobs_3(){
+		// Testing generateSignedBlobs(int n, int size, String format, JsonObject userData)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, userData);
+				
+				signedValueTester(roc, i, o, String[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	// Test additional functions
+	
+	@Test
+	public void testGetResult(){
+		// Testing getResult(int serialNumber)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String, Object> o = roc.generateSignedIntegers(10, 0, 10);			
+				HashMap<String, Object> o2 = roc.getResult(((JsonObject)o.get("random")).get("serialNumber").getAsInt());
+				
+				JsonObject data = ((JsonObject)o2.get("random")).getAsJsonObject();
+				int[] response = new Gson().fromJson(data.get("data"), int[].class);
+				
+				collector.checkThat(Arrays.equals((int[])o.get("data"), response), equalTo(true));	
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
 		}
 	}
 
 	// Test Functions (Cache)
 	
 	@Test
-	public void testIntegerCache(){
-		RandomOrgCache<int[]> c = roc.createIntegerCache(5, 0, 10);
+	public void testIntegerCache_1(){
+		// Testing createIntegerCache(int n, int min, int max)
+		RandomOrgCache<int[]> c = rocs[0].createIntegerCache(5, 0, 10);
 		c.stop();
 
 		try {
 			c.get();
-			Assert.fail("should have thrown NoSuchElementException");
+			collector.addError(new Error("should have thrown NoSuchElementException"));
 		} catch (NoSuchElementException e) {}
 		
+		collector.checkThat(c.isPaused(), equalTo(true));
 		c.resume();
 		
 		int[] got = null;
 		
+		// Testing RandomOrgCache function get()
 		while (got == null) {
 			try {
 				got = c.get();
@@ -718,22 +865,205 @@ public class RandomOrgClientBasicTest {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
-					Assert.fail("shouldn't have been interrupted!");
+					collector.addError(new Error("shouldn't have been interrupted!"));
 				}
 			}
 		}
 		
-		assertNotNull(got);
+		collector.checkThat(got, notNullValue());
+		
+		got = null;
+		
+		// Testing RandomOrgCache info functions
+		collector.checkThat(c.getCachedValues(), greaterThan(0));
+		collector.checkThat((int)c.getUsedBits(), greaterThan(0));
+		collector.checkThat((int)c.getUsedRequests(), greaterThan(0));
+		
+		// Testing RandomOrgCache function getOrWait()
+		while (got == null) {
+			try {
+				got = c.getOrWait();
+			} catch (NoSuchElementException e) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					collector.addError(new Error("shouldn't have been interrupted!"));
+				}
+			} catch (Exception e) {
+				collector.addError(new Error("should have returned a value"));
+			}
+		}
 	}
-
+	
 	@Test
-	public void testDecimalFractionCache(){
-		RandomOrgCache<double[]> c = roc2.createDecimalFractionCache(1, 5);
+	public void testIntegerCache_2(){
+		// Testing createIntegerCache(int n, int min, int max, boolean replacement, 
+		//				int base, int cacheSize)
+		RandomOrgCache<String[]> c = rocs[0].createIntegerCache(5, 50, 100, false, 16, 5);
 		c.stop();
 
 		try {
 			c.get();
-			Assert.fail("should have thrown NoSuchElementException");
+			collector.addError(new Error("should have thrown NoSuchElementException"));
+		} catch (NoSuchElementException e) {}
+		
+		collector.checkThat(c.isPaused(), equalTo(true));
+		c.resume();
+		
+		String[] got = null;
+		
+		// Testing RandomOrgCache function get()
+		while (got == null) {
+			try {
+				got = c.get();
+			} catch (NoSuchElementException e) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					collector.addError(new Error("shouldn't have been interrupted!"));
+				}
+			}
+		}
+		
+		collector.checkThat(got, notNullValue());
+	}
+	
+	@Test
+	public void testIntegerSequenceCache_1(){
+		// Testing createIntegerSequenceCache(int n, int length int min, int max)
+		RandomOrgCache<int[][]> c = rocs[0].createIntegerSequenceCache(2, 5, 0, 10);
+		c.stop();
+
+		try {
+			c.get();
+			collector.addError(new Error("should have thrown NoSuchElementException"));
+		} catch (NoSuchElementException e) {}
+		
+		c.resume();
+		
+		int[][] got = null;
+		
+		while (got == null) {
+			try {
+				got = c.get();
+			} catch (NoSuchElementException e) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					collector.addError(new Error("shouldn't have been interrupted!"));
+				}
+			}
+		}
+		
+		collector.checkThat(got, notNullValue());
+	}
+	
+	@Test
+	public void testIntegerSequenceCache_2(){
+		// Testing createIntegerSequenceCache(int n, int length int min, int max, 
+		//				boolean replacement, int base, int cacheSize)
+		RandomOrgCache<String[][]> c = rocs[0].createIntegerSequenceCache(2, 5, 0, 10, false, 16, 3);
+		c.stop();
+
+		try {
+			c.get();
+			collector.addError(new Error("should have thrown NoSuchElementException"));
+		} catch (NoSuchElementException e) {}
+		
+		c.resume();
+		
+		String[][] got = null;
+		
+		while (got == null) {
+			try {
+				got = c.get();
+			} catch (NoSuchElementException e) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					collector.addError(new Error("shouldn't have been interrupted!"));
+				}
+			}
+		}
+		
+		collector.checkThat(got, notNullValue());
+	}
+
+	@Test
+	public void testIntegerSequenceCache_3(){
+		// Testing createIntegerSequenceCache(int n, int[] length, int[] min, int[] max)
+		RandomOrgCache<int[][]> c = rocs[0].createIntegerSequenceCache(4, LENGTH, MIN, MAX);
+		c.stop();
+
+		try {
+			c.get();
+			collector.addError(new Error("should have thrown NoSuchElementException"));
+		} catch (NoSuchElementException e) {}
+		
+		c.resume();
+		
+		int[][] got = null;
+		
+		while (got == null) {
+			try {
+				got = c.get();
+			} catch (NoSuchElementException e) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					collector.addError(new Error("shouldn't have been interrupted!"));
+				}
+			}
+		}
+		
+		collector.checkThat(got, notNullValue());
+	}
+	
+	@Test
+	public void testIntegerSequenceCache_4(){
+		// Testing createIntegerSequenceCache(int n, int[] length, int[] min, int[] max, 
+		// 				boolean[] replacement, int[] base, int cacheSize)
+		boolean[] replacement = {true, true, true, true};
+		RandomOrgCache<String[][]> c = rocs[0].createIntegerSequenceCache(4, LENGTH, MIN, MAX, replacement, BASE, 10);
+		c.stop();
+
+		try {
+			c.get();
+			collector.addError(new Error("should have thrown NoSuchElementException"));
+		} catch (NoSuchElementException e) {}
+		
+		c.resume();
+		
+		String[][] got = null;
+		
+		while (got == null) {
+			try {
+				got = c.get();
+			} catch (NoSuchElementException e) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {
+					collector.addError(new Error("shouldn't have been interrupted!"));
+				}
+			}
+		}
+		
+		for (int i = 0; i < got.length; i++) {
+			collector.checkThat(got[i].length == LENGTH[i], equalTo(true));
+		}
+		
+		collector.checkThat(got, notNullValue());
+	}
+	
+	@Test
+	public void testDecimalFractionCache(){
+		// Testing createDecimalFractionCache(int n, int decimalPlaces)
+		RandomOrgCache<double[]> c = rocs[1].createDecimalFractionCache(1, 5);
+		c.stop();
+
+		try {
+			c.get();
+			collector.addError(new Error("should have thrown NoSuchElementException"));
 		} catch (NoSuchElementException e) {}
 		
 		c.resume();
@@ -747,22 +1077,24 @@ public class RandomOrgClientBasicTest {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
-					Assert.fail("shouldn't have been interrupted!");
+					collector.addError(new Error("shouldn't have been interrupted!"));
 				}
 			}
 		}
 		
-		assertNotNull(got);
+		collector.checkThat(got, notNullValue());
 	}
 
 	@Test
 	public void testGaussianCache(){
-		RandomOrgCache<double[]> c = roc.createGaussianCache(10, 3.41d, 2.1d, 4);
+		// Testing createGaussianCache(int n, double mean, double standardDeviation, 
+		// 				int significantDigits) 
+		RandomOrgCache<double[]> c = rocs[0].createGaussianCache(10, 3.41d, 2.1d, 4);
 		c.stop();
 
 		try {
 			c.get();
-			Assert.fail("should have thrown NoSuchElementException");
+			collector.addError(new Error("should have thrown NoSuchElementException"));
 		} catch (NoSuchElementException e) {}
 		
 		c.resume();
@@ -776,22 +1108,23 @@ public class RandomOrgClientBasicTest {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
-					Assert.fail("shouldn't have been interrupted!");
+					collector.addError(new Error("shouldn't have been interrupted!"));
 				}
 			}
 		}
 		
-		assertNotNull(got);
+		collector.checkThat(got, notNullValue());
 	}
 
 	@Test
 	public void testStringCache(){
-		RandomOrgCache<String[]> c = roc2.createStringCache(5, 5, "abcds");
+		// Testing createStringCache(int n, int length, String characters)
+		RandomOrgCache<String[]> c = rocs[1].createStringCache(5, 5, "abcds");
 		c.stop();
 
 		try {
 			c.get();
-			Assert.fail("should have thrown NoSuchElementException");
+			collector.addError(new Error("should have thrown NoSuchElementException"));
 		} catch (NoSuchElementException e) {}
 		
 		c.resume();
@@ -805,22 +1138,23 @@ public class RandomOrgClientBasicTest {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
-					Assert.fail("shouldn't have been interrupted!");
+					collector.addError(new Error("shouldn't have been interrupted!"));
 				}
 			}
 		}
 		
-		assertNotNull(got);
+		collector.checkThat(got, notNullValue());
 	}
 
 	@Test
 	public void testUUIDCache(){
-		RandomOrgCache<UUID[]> c = roc.createUUIDCache(5);
+		// Testing createUUIDCache(int n)
+		RandomOrgCache<UUID[]> c = rocs[0].createUUIDCache(5);
 		c.stop();
 
 		try {
 			c.get();
-			Assert.fail("should have thrown NoSuchElementException");
+			collector.addError(new Error("should have thrown NoSuchElementException"));
 		} catch (NoSuchElementException e) {}
 		
 		c.resume();
@@ -834,22 +1168,23 @@ public class RandomOrgClientBasicTest {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
-					Assert.fail("shouldn't have been interrupted!");
+					collector.addError(new Error("shouldn't have been interrupted!"));
 				}
 			}
 		}
 		
-		assertNotNull(got);
+		collector.checkThat(got, notNullValue());
 	}
 	
 	@Test
 	public void testBlobCache(){
-		RandomOrgCache<String[]> c = roc2.createBlobCache(5, 8);
+		// Testing createBlobCache(int n, int size)
+		RandomOrgCache<String[]> c = rocs[1].createBlobCache(5, 8);
 		c.stop();
 
 		try {
 			c.get();
-			Assert.fail("should have thrown NoSuchElementException");
+			collector.addError(new Error("should have thrown NoSuchElementException"));
 		} catch (NoSuchElementException e) {}
 		
 		c.resume();
@@ -863,11 +1198,100 @@ public class RandomOrgClientBasicTest {
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e1) {
-					Assert.fail("shouldn't have been interrupted!");
+					collector.addError(new Error("shouldn't have been interrupted!"));
 				}
 			}
 		}
 		
-		assertNotNull(got);
+		collector.checkThat(got, notNullValue());
+	}
+	
+	// Error message and helper functions 
+	
+	private String client(int i) {
+		return "RandomOrgClient roc" + i + " ";
+	}
+	
+	private String errorMessage() {
+		return errorMessage(-1);
+	}
+	
+	private String errorMessage(int i) {
+		return errorMessage(i, null);
+	}
+	
+	private String errorMessage(Exception e) {
+		return errorMessage(-1, e);
+	}
+	
+	private String errorMessage(int i, Exception e) {
+		return errorMessage(i, e, false);
+	}	
+	
+	private String errorMessage(int i, Exception e, boolean networking) {
+		if (networking) {
+			return client(i) + " - Networking error: " + e.getClass().getName() 
+					+ ":" + e.getMessage();
+		} else {
+			String s = "";
+			if (i > -1) {
+				s += client(i);
+			}
+			s += "should have thrown RandomOrgRANDOMORGError";
+			if (e != null) {
+				s += ", instead threw "	+ e.getClass().getName();
+			}
+			return s;
+		}
+	}
+	
+	/**
+	 *  Helper function for testing methods returning signed values
+	 *  
+	 * @param roc RandomOrgClient instance being used
+	 * @param i index of RandomOrgClient instance in rocs
+	 * @param o HashMap<String, Object> returned from call to a RandomOrgClient method 
+	 * 		  returning signed values
+	 * @param cls Class of the data expected to be returned from the call to the 
+	 * 		  RandomOrgClient method
+	 * 
+	 */
+	private void signedValueTester(RandomOrgClient roc, int i, HashMap<String, Object> o, Class<?> cls) {
+		signedValueTester(roc, i, o, cls, false);
+	}
+	
+	/**
+	 *  Helper function for testing methods returning signed values
+	 *  
+	 * @param roc RandomOrgClient instance being used
+	 * @param i index of RandomOrgClient instance in rocs
+	 * @param o HashMap<String, Object> returned from call to a RandomOrgClient method 
+	 * 		  returning signed values
+	 * @param cls Class of the data expected to be returned from the call to the 
+	 * 		  RandomOrgClient method
+	 * @param hasUserData boolean stating whether the request included userData (true) or not (false)
+	 * 
+	 */
+	private void signedValueTester(RandomOrgClient roc, int i, HashMap<String, Object> o, Class<?> cls, boolean hasUserData) {
+		collector.checkThat(o, notNullValue());
+		
+		collector.checkThat(o.containsKey("data"), equalTo(true));
+		collector.checkThat(o.containsKey("random"), equalTo(true));
+		collector.checkThat(o.containsKey("signature"), equalTo(true));
+		
+		collector.checkThat(o.get("data").getClass(), equalTo(cls));
+		collector.checkThat(o.get("random").getClass(), equalTo(JsonObject.class));
+		collector.checkThat(o.get("signature").getClass(), equalTo(String.class));
+		
+		if (hasUserData) {
+			collector.checkThat(((JsonObject) o.get("random")).get("userData"), equalTo(userData));
+		}
+		
+		try {
+			collector.checkThat(roc.verifySignature((JsonObject)o.get("random"), 
+					(String)o.get("signature")), equalTo(true));
+		} catch (Exception e) {
+			collector.addError(new Error(errorMessage(i, e, true)));
+		}
 	}
 }
