@@ -47,7 +47,7 @@ import com.google.gson.JsonParser;
  * This class will only allow the creation of one instance per API key. If an instance of this class 
  * already exists for a given key, that instance will be returned instead of a new instance.
  * 
- * This class obeys most of the guidelines set forth in https://api.random.org/json-rpc/2
+ * This class obeys most of the guidelines set forth in https://api.random.org/json-rpc/3
  * All requests respect the server's advisoryDelay returned in any responses, or use DEFAULT_DELAY 
  * if no advisoryDelay is returned. If the supplied API key is paused, i.e., has exceeded its daily 
  * bit/request allowance, this implementation will back off until midnight UTC.
@@ -58,7 +58,7 @@ import com.google.gson.JsonParser;
  */
 public class RandomOrgClient {
 	
-	// Basic RANDOM.ORG API functions https://api.random.org/json-rpc/2
+	// Basic RANDOM.ORG API functions https://api.random.org/json-rpc/3/basic
 	private static final String INTEGER_METHOD					= "generateIntegers";
 	private static final String INTEGER_SEQUENCE_METHOD			= "generateIntegerSequences";
 	private static final String DECIMAL_FRACTION_METHOD			= "generateDecimalFractions";
@@ -68,7 +68,7 @@ public class RandomOrgClient {
 	private static final String BLOB_METHOD						= "generateBlobs";
 	private static final String GET_USAGE_METHOD				= "getUsage";
 
-	// Signed RANDOM.ORG API functions https://api.random.org/json-rpc/2/signed
+	// Signed RANDOM.ORG API functions https://api.random.org/json-rpc/3/signed
 	private static final String SIGNED_INTEGER_METHOD			= "generateSignedIntegers";
 	private static final String SIGNED_INTEGER_SEQUENCE_METHOD	= "generateSignedIntegerSequences";
 	private static final String SIGNED_DECIMAL_FRACTION_METHOD	= "generateSignedDecimalFractions";
@@ -77,6 +77,9 @@ public class RandomOrgClient {
 	private static final String SIGNED_UUID_METHOD				= "generateSignedUUIDs";
 	private static final String SIGNED_BLOB_METHOD				= "generateSignedBlobs";
 	private static final String GET_RESULT_METHOD               = "getResult";
+	private static final String CREATE_TICKET_METHOD			= "createTickets";
+	private static final String LIST_TICKET_METHOD				= "listTickets";
+	private static final String GET_TICKET_METHOD				= "getTicket";
 	private static final String VERIFY_SIGNATURE_METHOD			= "verifySignature";
 
 	// Blob format literals
@@ -96,6 +99,7 @@ public class RandomOrgClient {
 	public static final boolean DEFAULT_REPLACEMENT				= true;
 	public static final int DEFAULT_INT_BASE					= 10;
 	public static final JsonObject DEFAULT_USER_DATA			= null;
+	public static final String DEFAULT_TICKET_ID				= null;
 	public static final int DEFAULT_CACHE_SIZE					= 20;
 	public static final int DEFAULT_CACHE_SIZE_SMALL			= 10;	//UUID and BLOB caches
 
@@ -105,7 +109,7 @@ public class RandomOrgClient {
 	private static HashSet<Integer> randomOrgErrors = new HashSet<Integer>();
 	static {
 		int[] ints = {100, 101, 200, 201, 202, 203, 204, 300, 301, 302, 303, 304, 305, 306, 307, 
-				400, 401, 402, 403, 404, 405, 500, 32000};
+				400, 401, 402, 403, 404, 405, 420, 421, 422, 423, 500, 32000};
 		for (int i : ints) {
 			RandomOrgClient.randomOrgErrors.add(i);
 		}
@@ -223,11 +227,11 @@ public class RandomOrgClient {
 		}
 	}
 	
-	// Basic methods for generating randomness, see: https://api.random.org/json-rpc/2/basic
+	// Basic methods for generating randomness, see: https://api.random.org/json-rpc/3/basic
 	
 	/**
 	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegers
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegers
 	 *
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -235,7 +239,7 @@ public class RandomOrgClient {
 	 * @param max the upper boundary for the range from which the random numbers will be picked. 
 	 *        Must be within the [-1e9,1e9] range.
 	 * 
-	 * @return int[] of random integers.
+	 * @return int[] of true random integers.
 	 *
 	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
 	 *         can be sent. 
@@ -265,7 +269,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegers
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegers
 	 *
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -306,7 +310,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegers
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegers
 	 *
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -352,7 +356,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
 	 * from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -393,7 +397,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
 	 * from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -431,13 +435,14 @@ public class RandomOrgClient {
 			       RandomOrgJSONRPCError, 
 			       MalformedURLException, 
 			       IOException {		
-		return this.extractIntSequences(this.integerSequencesMethod(n, length, min, max, replacement, DEFAULT_INT_BASE, DEFAULT_USER_DATA, false));
+		return this.extractIntSequences(this.integerSequencesMethod(n, length, min, max, replacement, 
+				DEFAULT_INT_BASE, DEFAULT_USER_DATA, DEFAULT_TICKET_ID, false));
 	}
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
 	 * from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -481,13 +486,13 @@ public class RandomOrgClient {
 			       MalformedURLException, 
 			       IOException {		
 		return this.extractIntSequencesString(this.integerSequencesMethod(n, length, 
-				min, max, replacement, base, DEFAULT_USER_DATA, false));
+				min, max, replacement, base, DEFAULT_USER_DATA, DEFAULT_TICKET_ID, false));
 	}
 	
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
 	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -531,7 +536,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
 	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -573,14 +578,14 @@ public class RandomOrgClient {
 		int[] base = new int[n];
 		Arrays.fill(base, DEFAULT_INT_BASE);
 		
-		return this.extractIntSequences(this.integerSequencesMethod(n, length, 
-				min, max, replacement, base, DEFAULT_USER_DATA, false));				
+		return this.extractIntSequences(this.integerSequencesMethod(n, length, min, max, replacement, 
+				base, DEFAULT_USER_DATA, DEFAULT_TICKET_ID, false));				
 	}
 	
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
 	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/basic#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -624,15 +629,15 @@ public class RandomOrgClient {
                    RandomOrgJSONRPCError, 
                    MalformedURLException, 
                    IOException {		
-		return this.extractIntSequencesString(this.integerSequencesMethod(n, length, 
-				min, max, replacement, base, DEFAULT_USER_DATA, false));
+		return this.extractIntSequencesString(this.integerSequencesMethod(n, length, min, max, 
+				replacement, base, DEFAULT_USER_DATA, DEFAULT_TICKET_ID, false));
 	}
 
 	/**
 	 * Request and return a list (size n) of true random decimal fractions, from a uniform 
 	 * distribution across the [0,1] interval with a user-defined number of decimal places 
 	 * from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateDecimalFractions
+	 * See: https://api.random.org/json-rpc/3/basic#generateDecimalFractions
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -669,7 +674,7 @@ public class RandomOrgClient {
 	 * Request and return a list (size n) of true random decimal fractions, from a uniform 
 	 * distribution across the [0,1] interval with a user-defined number of decimal places 
 	 * from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateDecimalFractions
+	 * See: https://api.random.org/json-rpc/3/basic#generateDecimalFractions
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -719,7 +724,7 @@ public class RandomOrgClient {
 	 * Request and return a list (size n) of true random numbers from a Gaussian distribution 
 	 * (also known as a normal distribution). The form uses a Box-Muller Transform to generate 
 	 * the Gaussian distribution from uniformly distributed numbers. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateGaussians
+	 * See: https://api.random.org/json-rpc/3/basic#generateGaussians
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -769,7 +774,7 @@ public class RandomOrgClient {
 
 	/**
 	 * Request and return a list (size n) of true random unicode strings from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateStrings
+	 * See: https://api.random.org/json-rpc/3/basic#generateStrings
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -807,7 +812,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return a list (size n) of true random unicode strings from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateStrings
+	 * See: https://api.random.org/json-rpc/3/basic#generateStrings
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -815,7 +820,7 @@ public class RandomOrgClient {
 	 * @param characters a string that contains the set of characters that are allowed to occur 
 	 *        in the random strings. The maximum number of characters is 80.
 	 * @param replacement specifies whether the random strings should be picked with replacement. 
-	 *        If True the resulting list of strings may contain duplicates, otherwise the strings 
+	 *        If true, the resulting list of strings may contain duplicates, otherwise the strings 
 	 *        will all be unique (default true).
 	 *
 	 * @return String[] of true random Strings.
@@ -860,7 +865,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of version 4 true random Universally Unique IDentifiers 
 	 * (UUIDs) in accordance with section 4.4 of RFC 4122, from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateUUIDs
+	 * See: https://api.random.org/json-rpc/3/basic#generateUUIDs
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 *
@@ -903,7 +908,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of Binary Large OBjects (BLOBs) as unicode strings 
 	 * containing true random data from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateBlobs
+	 * See: https://api.random.org/json-rpc/3/basic#generateBlobs
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] range 
@@ -940,7 +945,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of Binary Large OBjects (BLOBs) as unicode strings 
 	 * containing true random data from the server. 
-	 * See: https://api.random.org/json-rpc/2/basic#generateBlobs
+	 * See: https://api.random.org/json-rpc/3/basic#generateBlobs
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] range 
@@ -986,13 +991,13 @@ public class RandomOrgClient {
 		return this.extractStrings(response);
 	}
 	
-	// Signed methods for generating randomness, see: https://api.random.org/json-rpc/2/signed
+	// Signed methods for generating randomness, see: https://api.random.org/json-rpc/3/signed
 	
 	/**
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
 	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedIntegers
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedIntegers
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1034,7 +1039,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
 	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedIntegers
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedIntegers
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1079,7 +1084,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
 	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedIntegers
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedIntegers
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1122,6 +1127,60 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {
+		return this.generateSignedIntegers(n, min, max, replacement, base, userData, DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request a list (size n) of true random integers within a user-defined range from the server. 
+	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
+	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedIntegers
+	 *
+	 * @param n how many random integers you need. Must be within the [1,1e4] range.
+	 * @param min the lower boundary for the range from which the random numbers will be picked. 
+	 *        Must be within the [-1e9,1e9] range.
+	 * @param max the upper boundary for the range from which the random numbers will be picked. 
+	 *        Must be within the [-1e9,1e9] range.
+	 * @param replacement specifies whether the random numbers should be picked with replacement. 
+	 *        If true, the resulting numbers may contain duplicate values, otherwise the numbers 
+	 *        will all be unique (default true).
+	 * @param base the base that will be used to display the numbers. Values allowed are 2, 
+	 *        8, 10 and 16 (default 10).
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
+	 *        in encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, 
+	 *         "data": random int[] if decimal (base 10)
+	 *                 or random String[] if non-decimal (any other base value)
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max, boolean replacement, int base, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {
 		JsonObject request = new JsonObject();
 
 		request.addProperty("n", n);
@@ -1130,6 +1189,7 @@ public class RandomOrgClient {
 		request.addProperty("replacement", replacement);
 		request.addProperty("base", base);
 		request.add("userData", userData);
+		request.addProperty("ticketId", ticketId);
 		
 		request = this.generateKeyedRequest(request, SIGNED_INTEGER_METHOD);
 		
@@ -1148,7 +1208,7 @@ public class RandomOrgClient {
 	 * Request and return uniform sequences of true random integers within user-defined 
 	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
 	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/2/signed#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/signed#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -1193,7 +1253,7 @@ public class RandomOrgClient {
 	 * Request and return uniform sequences of true random integers within user-defined 
 	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
 	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/2/signed#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/signed#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -1238,8 +1298,64 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {		
+		return this.generateSignedIntegerSequences(n, length, min, max, replacement, base, userData, DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request and return uniform sequences of true random integers within user-defined 
+	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
+	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
+	 * See: https://api.random.org/json-rpc/3/signed#generateIntegerSequences
+	 *
+	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
+	 * @param length the length of each array of random integers requested. Must be within the 
+	 *        [1,1e4] range. 
+	 * @param min the lower boundary for the range from which the random numbers will be picked. 
+	 *        Must be within the [-1e9,1e9] range.
+	 * @param max the upper boundary for the range from which the random numbers will be picked. 
+	 *        Must be within the [-1e9,1e9] range.
+	 * @param replacement specifies whether the random numbers should be picked with replacement. 
+	 *        If true, the resulting numbers may contain duplicate values, otherwise the numbers 
+	 *        will all be unique (default true).
+	 * @param base the base that will be used to display the numbers. Values allowed are 2, 8, 
+	 *        10 and 16 (default 10). 
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size in 
+	 *        encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, 
+	 *         "data": random int[][] if decimal (base 10) 
+	 *                 or random String[][] if non-decimal (any other base value)
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */	
+	public HashMap<String, Object> generateSignedIntegerSequences(int n, int length, int min, int max, boolean replacement, int base, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {		
 		JsonObject response = this.integerSequencesMethod(n, length, min, max, 
-				replacement, base, userData, true);
+				replacement, base, userData, ticketId, true);
 		
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		if (base == 10) {
@@ -1255,8 +1371,7 @@ public class RandomOrgClient {
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
 	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
 	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/2/signed#generateIntegerSequences"
-	 * https://api.random.org/json-rpc/2/signed#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/signed#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -1306,7 +1421,7 @@ public class RandomOrgClient {
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
 	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
 	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/2/signed#generateIntegerSequences
+	 * See: https://api.random.org/json-rpc/3/signed#generateIntegerSequences
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the 
@@ -1357,11 +1472,74 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {		
+		return this.generateSignedIntegerSequences(n, length, min, max, replacement, base, userData, 
+				DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request and return uniform or multiform sequences of true random integers within user-defined 
+	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
+	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
+	 * See: https://api.random.org/json-rpc/3/signed#generateIntegerSequences
+	 *
+	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
+	 * @param length an array with n integers each specifying the length of the 
+	 * 		  sequence identified by its index. Each value in the array must 
+	 *        be within the [1,1e4] range. 
+	 * @param min an array with n integers, each specifying the lower boundary of 
+	 *        the sequence identified by its index. Each value in the array must 
+	 *        be within the [-1e9,1e9] range.
+	 * @param max an array with n integers, each specifying the upper boundary of 
+	 *        the sequence identified by its index. Each value in the array must 
+	 *        be within the [-1e9,1e9] range.
+	 * @param replacement an array with n Boolean values, each specifying whether 
+	 *        the sequence identified by its index will be created with or without 
+	 *        replacement. If true, the resulting numbers may contain 
+	 *        duplicate values, otherwise the numbers will all be unique within 
+	 *        each sequence (default true).
+	 * @param base an array with n integer values, each specifying the base 
+	 *        that will be used to display the sequence identified by its index. 
+	 *        Values allowed are 2, 8, 10 and 16 (default 10). 
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
+	 *        in encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, 
+	 *         "data": random int[][] if decimal (all base values are 10) 
+	 *                 or random String[][] if non-decimal (any other mix of base values)
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */	
+	public HashMap<String, Object> generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {		
 		int[] defaultBase = new int[n];
 		Arrays.fill(defaultBase, DEFAULT_INT_BASE);
 		
 		JsonObject response = this.integerSequencesMethod(n, length, min, max, 
-				replacement, base, userData, true);
+				replacement, base, userData, ticketId, true);
 		
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		if (Arrays.equals(base, defaultBase)) {
@@ -1378,7 +1556,7 @@ public class RandomOrgClient {
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
 	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedDecimalFractions
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedDecimalFractions
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -1417,7 +1595,7 @@ public class RandomOrgClient {
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
 	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedDecimalFractions
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedDecimalFractions
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -1459,7 +1637,7 @@ public class RandomOrgClient {
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
 	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedDecimalFractions
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedDecimalFractions
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -1495,12 +1673,61 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {		
+		return this.generateSignedDecimalFractions(n, decimalPlaces, replacement, userData, DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request a list (size n) of true random decimal fractions, from a uniform distribution 
+	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
+	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
+	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedDecimalFractions
+	 *
+	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
+	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
+	 * @param replacement specifies whether the random numbers should be picked with replacement. 
+	 *        If true, the resulting numbers may contain duplicate values, otherwise the numbers 
+	 *        will all be unique (default true).
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size in 
+	 *        encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, "data": random double[]
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {		
 		JsonObject request = new JsonObject();
 
 		request.addProperty("n", n);
 		request.addProperty("decimalPlaces", decimalPlaces);
 		request.addProperty("replacement", replacement);
 		request.add("userData", userData);
+		request.addProperty("ticketId", ticketId);
 		
 		request = this.generateKeyedRequest(request, SIGNED_DECIMAL_FRACTION_METHOD);
 		
@@ -1518,7 +1745,7 @@ public class RandomOrgClient {
 	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
 	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
 	 * and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedGaussians
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedGaussians
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -1563,7 +1790,7 @@ public class RandomOrgClient {
 	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
 	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
 	 * and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedGaussians
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedGaussians
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -1600,6 +1827,57 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {		
+		return this.generateSignedGaussians(n, mean, standardDeviation, significantDigits, userData, 
+				DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request a list (size n) of true random numbers from a Gaussian distribution (also known 
+	 * as a normal distribution). The form uses a Box-Muller Transform to generate the Gaussian 
+	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
+	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
+	 * and the response's signature mapped to 'signature'. 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedGaussians
+     * 
+	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
+	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
+	 * @param standardDeviation the distribution's standard deviation. Must be within the 
+	 *        [-1e6,1e6] range.
+	 * @param significantDigits the number of significant digits to use. Must be within the 
+	 *        [2,20] range.
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
+	 *        in encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, "data": random double[]
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {		
 		JsonObject request = new JsonObject();
 
 		request.addProperty("n", n);
@@ -1607,6 +1885,7 @@ public class RandomOrgClient {
 		request.addProperty("standardDeviation", standardDeviation);
 		request.addProperty("significantDigits", significantDigits);
 		request.add("userData", userData);
+		request.addProperty("ticketId", ticketId);
 		
 		request = this.generateKeyedRequest(request, SIGNED_GAUSSIAN_METHOD);
 		
@@ -1622,7 +1901,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data', the original response mapped 
 	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedStrings
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedStrings
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -1663,7 +1942,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data',the original response mapped 
 	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedStrings
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedStrings
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -1708,7 +1987,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data', the original response mapped 
 	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedStrings
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedStrings
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -1738,15 +2017,65 @@ public class RandomOrgClient {
 	 * @throws IOException @see java.io.IOException
 	 */
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement, JsonObject userData) 
-					throws RandomOrgSendTimeoutException,
-					RandomOrgKeyNotRunningError,
-					RandomOrgInsufficientRequestsError, 
-					RandomOrgInsufficientBitsError,
-					RandomOrgBadHTTPResponseException,
-					RandomOrgRANDOMORGError,
-					RandomOrgJSONRPCError,
-					MalformedURLException,
-					IOException {		
+			throws RandomOrgSendTimeoutException,
+				   RandomOrgKeyNotRunningError,
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError,
+				   RandomOrgBadHTTPResponseException,
+				   RandomOrgRANDOMORGError,
+				   RandomOrgJSONRPCError,
+				   MalformedURLException,
+				   IOException {		
+		return this.generateSignedStrings(n, length, characters, replacement, userData, DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
+	 * object with the parsed random string list mapped to 'data', the original response mapped 
+	 * to 'random', and the response's signature mapped to 'signature'. 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedStrings
+     *
+	 * @param n how many random strings you need. Must be within the [1,1e4] range.
+	 * @param length the length of each string. Must be within the [1,20] range. All strings 
+	 *        will be of the same length.
+	 * @param characters a string that contains the set of characters that are allowed to 
+	 *        occur in the random strings. The maximum number of characters is 80.
+	 * @param replacement specifies whether the random strings should be picked with replacement. 
+	 *        If true, the resulting list of strings may contain duplicates, otherwise the strings 
+	 *        will all be unique (default true).
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
+	 *        in encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 * 
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, "data": random String[]
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException,
+				   RandomOrgKeyNotRunningError,
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError,
+				   RandomOrgBadHTTPResponseException,
+				   RandomOrgRANDOMORGError,
+				   RandomOrgJSONRPCError,
+				   MalformedURLException,
+				   IOException {		
 		JsonObject request = new JsonObject();
 
 		request.addProperty("n", n);
@@ -1754,6 +2083,7 @@ public class RandomOrgClient {
 		request.addProperty("characters", characters);
 		request.addProperty("replacement", replacement);
 		request.add("userData", userData);
+		request.addProperty("ticketId", ticketId);
 		
 		request = this.generateKeyedRequest(request, SIGNED_STRING_METHOD);
 		
@@ -1770,7 +2100,7 @@ public class RandomOrgClient {
 	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
 	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
 	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedUUIDs
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedUUIDs
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 *
@@ -1808,7 +2138,7 @@ public class RandomOrgClient {
 	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
 	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
 	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedUUIDs
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedUUIDs
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
@@ -1840,10 +2170,55 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {		
+		return this.generateSignedUUIDs(n, userData, DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request a list (size n) of version 4 true random Universally Unique IDentifiers (UUIDs) 
+	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
+	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
+	 * to 'random', and the response's signature mapped to 'signature'. 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedUUIDs
+     * 
+	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
+	 *        in encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, "data": random UUID[]
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> generateSignedUUIDs(int n, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {		
 		JsonObject request = new JsonObject();
 		
 		request.addProperty("n", n);
 		request.add("userData", userData);
+		request.addProperty("ticketId", ticketId);
 		
 		request = this.generateKeyedRequest(request, SIGNED_UUID_METHOD);
 		
@@ -1860,7 +2235,7 @@ public class RandomOrgClient {
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
 	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedBlobs 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedBlobs 
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -1900,7 +2275,7 @@ public class RandomOrgClient {
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
 	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedBlobs 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedBlobs 
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -1942,7 +2317,7 @@ public class RandomOrgClient {
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
 	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/2/signed#generateSignedBlobs 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedBlobs 
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -1978,12 +2353,61 @@ public class RandomOrgClient {
 				   RandomOrgJSONRPCError, 
 				   MalformedURLException, 
 				   IOException {		
+		return this.generateSignedBlobs(n, size, format, userData, DEFAULT_TICKET_ID);
+	}
+	
+	/**
+	 * Request a list (size n) of Binary Large OBjects (BLOBs) containing true random data 
+	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
+	 * to 'data', the original response mapped to 'random', and the response's signature 
+	 * mapped to 'signature'. 
+	 * See: https://api.random.org/json-rpc/3/signed#generateSignedBlobs 
+     * 
+	 * @param n how many random blobs you need. Must be within the [1,100] range.
+	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
+	 *        range and must be divisible by 8.
+	 * @param format specifies the format in which the blobs will be returned. Values allowed 
+	 *        are BLOB_FORMAT_BASE64 and BLOB_FORMAT_HEX (default BLOB_FORMAT_BASE64).
+	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
+	 *        in encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
+	 *
+	 * @return HashMap with "random": random JsonObject, 
+	 *         "signature": signature String, "data": random String[]
+	 *
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> generateSignedBlobs(int n, int size, String format, JsonObject userData, String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+				   RandomOrgKeyNotRunningError, 
+				   RandomOrgInsufficientRequestsError, 
+				   RandomOrgInsufficientBitsError, 
+				   RandomOrgBadHTTPResponseException, 
+				   RandomOrgRANDOMORGError, 
+				   RandomOrgJSONRPCError, 
+				   MalformedURLException, 
+				   IOException {		
 		JsonObject request = new JsonObject();
 		
 		request.addProperty("n", n);
 		request.addProperty("size", size);
 		request.addProperty("format", format);
 		request.add("userData", userData);
+		request.addProperty("ticketId", ticketId);
 		
 		request = this.generateKeyedRequest(request, SIGNED_BLOB_METHOD);
 		
@@ -1996,13 +2420,13 @@ public class RandomOrgClient {
 	}
 	
 	// Retrieve a signed result generated within the last 24h, 
-	// see https://api.random.org/json-rpc/2/signed#getResult
+	// see https://api.random.org/json-rpc/3/signed#getResult
 		
 	/**
 	 * Retrieve signed random values generated within the last 24h, using a serial number. 
 	 * If the historical response was found, a response with the result property containing 
 	 * the same values that were returned by the method that was used to generate the values. 
-	 * See: https://api.random.org/json-rpc/2/signed#getResult
+	 * See: https://api.random.org/json-rpc/3/signed#getResult
      * 
 	 * @param serialNumber an integer containing the serial number associated with the response 
 	 *        you wish to retrieve.
@@ -2044,14 +2468,235 @@ public class RandomOrgClient {
 		
 		return this.extractSignedResponse(response, result);
 	}
+	
+	// Ticket methods 
+	
+	/**
+	 * Create n tickets to be used in signed value-generating methods. 
+	 * See: https://api.random.org/json-rpc/3/signed#createTickets
+	 * 
+	 * @param n The number of tickets requested. This must be a number in the [1, 50] range.
+	 * @param showResult A boolean value that determines how much information calls to {@link 
+	 *        #getTicket(String ticketId) getTicket} will return. If {@code showResult} is {@code false},  
+	 *        {@code getTicket} will return only the basic ticket information. If {@code showResult} is 
+	 *        {@code true}, the full random and signature objects from the response that was used to satisfy 
+	 *        the ticket is returned.    
+	 *        
+	 * @return JsonObject[] of ticket objects
+	 * 
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public JsonObject[] createTickets(int n, boolean showResult) 
+			throws RandomOrgSendTimeoutException, 
+			       RandomOrgKeyNotRunningError, 
+			       RandomOrgInsufficientRequestsError, 
+			       RandomOrgInsufficientBitsError, 
+			       RandomOrgBadHTTPResponseException, 
+			       RandomOrgRANDOMORGError, 
+			       RandomOrgJSONRPCError, 
+			       MalformedURLException, 
+			       IOException {
+		
+		JsonObject request = new JsonObject();
+		
+		request.addProperty("n", n);
+		request.addProperty("showResult", showResult);
+		
+		request = this.generateKeyedRequest(request, CREATE_TICKET_METHOD);
+		
+		JsonObject response = this.sendRequest(request);
+		
+		return this.extractTickets(response);
+	}
+	
+	/**
+	 * Obtain information about tickets linked with your API key. The maximum number of tickets 
+	 * that can be returned by this method is 2000. 
+	 * See: https://api.random.org/json-rpc/3/signed#listTickets
+	 * 
+	 * @param ticketType A string describing the type of tickets you want to obtain information 
+	 *        about. Possible values are {@code singleton, head} and {@code tail}. 
+	 *        <ul>
+	 *        		<li>{@code singleton} returns tickets that have no previous or next tickets. 
+	 *        		<li>{@code head} returns tickets hat do not have a previous ticket but that 
+	 *                  do have a next ticket.
+	 *              <li>{@code tail} returns tickets that have a previous ticket but do not have 
+	 *                  a next ticket. 
+	 *        </ul>
+	 * 
+	 * @return JsonObject[] of tickets of the type requested
+	 * 
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public JsonObject[] listTickets(String ticketType) 
+			throws RandomOrgSendTimeoutException, 
+			       RandomOrgKeyNotRunningError, 
+			       RandomOrgInsufficientRequestsError, 
+			       RandomOrgInsufficientBitsError, 
+			       RandomOrgBadHTTPResponseException, 
+			       RandomOrgRANDOMORGError, 
+			       RandomOrgJSONRPCError, 
+			       MalformedURLException, 
+			       IOException {
+		
+		JsonObject request = new JsonObject();
+		
+		request.addProperty("ticketType", ticketType);
+		
+		request = this.generateKeyedRequest(request, LIST_TICKET_METHOD);
+		
+		JsonObject response = this.sendRequest(request);
+		
+		return this.extractTickets(response);
+	}
+	
+	/**
+	 * Obtain information about a single ticket using the {@code ticketId} associated with it. 
+	 * If the ticket has {@code showResult} set to true and has been used, this method will return the 
+	 * values generated. 
+	 * See:https://api.random.org/json-rpc/3/signed#getTicket
+	 * 
+	 * @param ticketId A string containing a ticket identifier returned by a prior call to the 
+	 *        {@link #createTickets(int n, boolean showResult) createTicket} method.
+	 *        
+	 * @return HashMap with the following data: 
+	 * 		   <p>If the ticket was created with {@code showResult true} and has been used in a 
+	 *         signed value-generating method:
+	 *         <ul> 
+	 *          <li>"random": random JsonObject as returned from the server
+	 *          <li>"signature": signature String
+	 *          <li>"data": an array of random values of the type corresponding to the method that 
+	 *               the ticket was used on
+	 *         </ul>
+	 *         If the ticket was created with {@code showResult false} or has not yet been used:
+	 *         <ul>
+	 *         	<li>"result": JsonObject returned from the server
+	 *         </ul>
+	 * 
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 */
+	public HashMap<String, Object> getTicket(String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+			       RandomOrgKeyNotRunningError, 
+			       RandomOrgInsufficientRequestsError, 
+			       RandomOrgInsufficientBitsError, 
+			       RandomOrgBadHTTPResponseException, 
+			       RandomOrgRANDOMORGError, 
+			       RandomOrgJSONRPCError, 
+			       MalformedURLException, 
+			       IOException {
+		
+		JsonObject request = new JsonObject();
+		
+		request.addProperty("ticketId", ticketId);
+		
+		request = this.generateRequest(request, GET_TICKET_METHOD);
+		
+		JsonObject response = this.sendRequest(request);
+		
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		
+		response = response.get("result").getAsJsonObject();
+		
+		if (response.has("result") && !response.get("result").isJsonNull()) {
+			String method = response.get("result").getAsJsonObject()
+							.get("random").getAsJsonObject()
+							.get("method").getAsString();
+			
+			if (method.equals(SIGNED_INTEGER_METHOD)) {
+				if (response.get("result").getAsJsonObject()
+						.get("random").getAsJsonObject()
+						.get("base").getAsInt() == 10) {
+					// decimal base
+					result.put("data", this.extractInts(response));
+				} else {
+					// non-decimal base
+					result.put("data", this.extractStrings(response));
+				}				
+			} else if (method.equals(SIGNED_INTEGER_SEQUENCE_METHOD)) {
+				boolean decimal = false;
+				JsonObject random = response.get("result").getAsJsonObject()
+									.get("random").getAsJsonObject();
+				
+				if (random.get("base").isJsonArray()) {
+					// Integer sequence method with array parameters
+					int[] defaultBase = new int[random.get("n").getAsInt()];
+					Arrays.fill(defaultBase, DEFAULT_INT_BASE);
+					
+					if (Arrays.equals(defaultBase, gson.fromJson(random.get("base"), int[].class))) {
+						// Decimal base for all sequences requested
+						decimal = true;
+					}
+				} else if (random.get("base").getAsInt() == 10) {
+					// Integer sequence method with single value parameters and decimal base
+					decimal = true;
+				}
+				
+				if (decimal) {
+					result.put("data", this.extractIntSequences(response));
+				} else {
+					result.put("data", this.extractIntSequencesString(response));
+				}				
+			} else if (method.equals(SIGNED_DECIMAL_FRACTION_METHOD) 
+					|| method.equals(SIGNED_GAUSSIAN_METHOD)) {
+				result.put("data", this.extractDoubles(response));
+			} else if (method.equals(SIGNED_STRING_METHOD) 
+					|| method.equals(SIGNED_BLOB_METHOD)) {
+				result.put("data", this.extractStrings(response));
+			} else if (method.equals(SIGNED_UUID_METHOD)) {
+				result.put("data", this.extractUUIDs(response));
+			}	
+			return this.extractSignedResponse(response, result);
+		} else {
+			/* 
+			 * Returns the information for a ticket with showResult == false OR 
+			 * a ticket with showResult == true, but which has not yet been used
+			 */
+			result.put("result", response);		
+			return result;
+		}		
+	}
 
-	// Signature verification for signed methods, see: https://api.random.org/json-rpc/2/signed
+	// Signature verification for signed methods, see: https://api.random.org/json-rpc/3/signed
 	
 	/**
 	 * Verify the signature of a response previously received from one of the methods in 
 	 * the Signed API with the server. This is used to examine the authenticity of numbers. 
 	 * Return True on verification success. 
-	 * See: https://api.random.org/json-rpc/2/signed#verifySignature
+	 * See: https://api.random.org/json-rpc/3/signed#verifySignature
      * 
 	 * @param random the random field from a response returned by RANDOM.ORG through one of 
 	 *        the Signed API methods.
@@ -3108,15 +3753,14 @@ public class RandomOrgClient {
 									RandomOrgJSONRPCError,
 									MalformedURLException,
 									IOException {
-		
 		if (this.bitsLeft < 0 || System.currentTimeMillis() > (this.lastResponseReceivedTime + RandomOrgClient.ALLOWANCE_STATE_REFRESH_SECONDS)) {
 			this.getUsage();
 		}
 		return this.bitsLeft;
 	}
-	
-	// Server communications & helper functions.
 
+	// Server communications & helper functions.
+	
 	/** 
 	 * Issue a getUsage request to update bits and requests left.
      * 
@@ -3295,6 +3939,22 @@ public class RandomOrgClient {
 		}
 		
 		return randoms;
+	}
+	
+	/**
+	 * Gets list of ticket objects from  response JSON.
+	 *
+	 * @param response JSON from which to extract list of ticket objects.
+	 *
+	 * @return JsonObject[] of tickets.
+	 */
+	protected JsonObject[] extractTickets(JsonObject response) {
+		JsonArray t = (JsonArray) response.get("result");
+		JsonObject[] tickets = new JsonObject[t.size()];
+		for (int i = 0; i < tickets.length; i++) {
+			tickets[i] = t.get(i).getAsJsonObject();
+		}
+		return tickets;
 	}
 	
 	/** 
@@ -3707,7 +4367,7 @@ public class RandomOrgClient {
 			String message = error.get("message").getAsString();
 			
 			// RandomOrgAllowanceExceededError, API key not running, backoff until midnight UTC, 
-			// from RANDOM.ORG Errors: https://api.random.org/json-rpc/2/error-codes
+			// from RANDOM.ORG Errors: https://api.random.org/json-rpc/3/error-codes
 			if (code == 402) {
 				
 				Calendar date = new GregorianCalendar();
@@ -3732,14 +4392,14 @@ public class RandomOrgClient {
 				return ret;
 
 			// RandomOrgRANDOMORGError from RANDOM.ORG Errors: 
-			// https://api.random.org/json-rpc/2/error-codes
+			// https://api.random.org/json-rpc/3/error-codes
 			} else if (RandomOrgClient.randomOrgErrors.contains(code)) {
 				ret.put("exception", new RandomOrgRANDOMORGError("Error " + code 
 						+ ": " + message));
 				return ret;
 				
 			// RandomOrgJSONRPCError from JSON-RPC Errors: 
-			// https://api.random.org/json-rpc/2/error-codes
+			// https://api.random.org/json-rpc/3/error-codes
 			} else {
 				ret.put("exception", new RandomOrgJSONRPCError("Error " + code 
 						+ ": " + message));
@@ -3747,24 +4407,34 @@ public class RandomOrgClient {
 			}
 		}
 		
-		JsonObject result = response.get("result").getAsJsonObject();
+		String method = request.get("method").getAsString();
 		
-		// Update usage statistics
-		if (result.has("requestsLeft")) {
-			this.requestsLeft = result.get("requestsLeft").getAsInt();
-			this.bitsLeft = result.get("bitsLeft").getAsInt();
-		}
-
-		// Set new server advisory delay
-		synchronized (this.advisoryDelayLock) {
-			if (result.has("advisoryDelay")) {
-				this.advisoryDelay =  result.get("advisoryDelay").getAsInt();
-			} else {
-				// Use default if none from server.
+		if (method.equals("listTickets") || method.equals("createTickets") || method.equals("getTicket")) {
+			// Set default server advisory delay
+			synchronized (this.advisoryDelayLock) {
 				this.advisoryDelay = RandomOrgClient.DEFAULT_DELAY;
+				this.lastResponseReceivedTime = System.currentTimeMillis();
 			}
+		} else {
+			JsonObject result = response.get("result").getAsJsonObject();
 			
-			this.lastResponseReceivedTime = System.currentTimeMillis();
+			// Update usage statistics
+			if (result.has("requestsLeft")) {
+				this.requestsLeft = result.get("requestsLeft").getAsInt();
+				this.bitsLeft = result.get("bitsLeft").getAsInt();
+			}
+
+			// Set new server advisory delay
+			synchronized (this.advisoryDelayLock) {
+				if (result.has("advisoryDelay")) {
+					this.advisoryDelay =  result.get("advisoryDelay").getAsInt();
+				} else {
+					// Use default if none from server.
+					this.advisoryDelay = RandomOrgClient.DEFAULT_DELAY;
+				}
+				
+				this.lastResponseReceivedTime = System.currentTimeMillis();
+			}
 		}
 		
 		ret.put("response", response);
@@ -3786,7 +4456,7 @@ public class RandomOrgClient {
 	private JsonObject post(JsonObject json) throws IOException, 
 													MalformedURLException, 
 													RandomOrgBadHTTPResponseException {
-		HttpsURLConnection con = (HttpsURLConnection) new URL("https://api.random.org/json-rpc/2/invoke").openConnection();
+		HttpsURLConnection con = (HttpsURLConnection) new URL("https://api.random.org/json-rpc/3/invoke").openConnection();
 		con.setConnectTimeout(this.httpTimeout);
 
 		// headers		
@@ -3814,7 +4484,7 @@ public class RandomOrgClient {
 			}
 			in.close();
 
-			return new JsonParser().parse(response.toString()).getAsJsonObject();
+			return JsonParser.parseString(response.toString()).getAsJsonObject();
 			
 			// Alternative to avoid the deprecation warnings when using Gson 2.8.6+:
 			// return JsonParser.parseString(response.toString()).getAsJsonObject();
@@ -3894,6 +4564,10 @@ public class RandomOrgClient {
 	 *        and 16 (default 10).
 	 * @param userData JsonObject that will be included in unmodified form. Its maximum size in 
 	 *        encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
 	 * @param signed boolean representing whether the request uses Basic API (false) or signed 
 	 *        API (true).
 	 *
@@ -3912,7 +4586,7 @@ public class RandomOrgClient {
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
 	 */
-	private JsonObject integerSequencesMethod(int n, int length, int min, int max, boolean replacement, int base, JsonObject userData, boolean signed) 
+	private JsonObject integerSequencesMethod(int n, int length, int min, int max, boolean replacement, int base, JsonObject userData, String ticketId, boolean signed) 
 			throws RandomOrgSendTimeoutException, 
 			       RandomOrgKeyNotRunningError, 
 			       RandomOrgInsufficientRequestsError, 
@@ -3933,6 +4607,7 @@ public class RandomOrgClient {
 		
 		if (signed) {
 			request.add("userData", userData);
+			request.addProperty("ticketId", ticketId);
 			request = this.generateKeyedRequest(request, SIGNED_INTEGER_SEQUENCE_METHOD);
 		} else {		
 			request = this.generateKeyedRequest(request, INTEGER_SEQUENCE_METHOD);
@@ -3958,6 +4633,10 @@ public class RandomOrgClient {
 	 *        and 16 (default 10).
 	 * @param userData JsonObject that will be included in unmodified form. Its maximum size in 
 	 *        encoded (String) form is 1,000 characters (default null).
+	 * @param ticketId A string with ticket identifier obtained via the {@link #createTickets(int n, 
+	 *        boolean showResult) createTickets} method. Specifying a value for {@code ticketId} will 
+	 *        cause RANDOM.ORG to record that the ticket was used to generate the requested random 
+	 *        values. Each ticket can only be used once (default null).
 	 * @param signed boolean representing whether the request uses Basic API (false) or signed 
 	 *        API (true).
 	 *
@@ -3976,7 +4655,7 @@ public class RandomOrgClient {
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
 	 */
-	private JsonObject integerSequencesMethod(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject userData, boolean signed) 
+	private JsonObject integerSequencesMethod(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject userData, String ticketId, boolean signed) 
 			throws RandomOrgSendTimeoutException, 
 			       RandomOrgKeyNotRunningError, 
 			       RandomOrgInsufficientRequestsError, 
@@ -3997,6 +4676,7 @@ public class RandomOrgClient {
 		
 		if (signed) {
 			request.add("userData", userData);
+			request.addProperty("ticketId", ticketId);
 			request = this.generateKeyedRequest(request, SIGNED_INTEGER_SEQUENCE_METHOD);
 		} else {
 			request = this.generateKeyedRequest(request, INTEGER_SEQUENCE_METHOD);

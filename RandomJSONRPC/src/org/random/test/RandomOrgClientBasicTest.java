@@ -1,6 +1,5 @@
 package org.random.test;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -183,6 +182,58 @@ public class RandomOrgClientBasicTest {
 			System.out.println(e.getMessage());
 		} catch (Exception e) {
 			collector.addError(new Error(errorMessage(e)));
+		}
+	}
+	
+	@Test
+	public void testNegativeErrorMessage420(){
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateSignedIntegers(5, 0, 10, false, 10, null, "ffffffffffffffff");
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testNegativeErrorMessage421(){
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				roc.generateSignedIntegers(5, 0, 10, false, 10, null, "d5b8f6d03f99a134");
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testNegativeErrorMessage422(){
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				
+				roc.generateSignedIntegers(5, 0, 10, false, 10, null, ticketId);
+				roc.generateSignedIntegers(5, 0, 10, false, 10, null, ticketId);
+				
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				System.out.println(e.getMessage());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
 		}
 	}
 	
@@ -441,7 +492,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String, Object> o = roc.generateSignedIntegers(10, 0, 10);
 				
-				signedValueTester(roc, i, o, int[].class);
+				this.signedValueTester(roc, i, o, int[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -457,7 +508,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false);
 				
-				signedValueTester(roc, i, o, int[].class);
+				this.signedValueTester(roc, i, o, int[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -474,7 +525,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 10, userData);
 				
-				signedValueTester(roc, i, o, int[].class, true);
+				this.signedValueTester(roc, i, o, int[].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -491,7 +542,43 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 16, userData);
 				
-				signedValueTester(roc, i, o, String[].class, true);
+				this.signedValueTester(roc, i, o, String[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedInteger_5(){
+		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
+		// 				int base, JsonObject userData, String ticketId) -- decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 10, userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, int[].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedInteger_6(){
+		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
+		// 				int base, JsonObject userData, String ticketId) -- non-decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 16, userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, String[].class, true, ticketId);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -507,7 +594,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10);
 				
-				signedValueTester(roc, i, o, int[][].class);
+				this.signedValueTester(roc, i, o, int[][].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -525,7 +612,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, userData);
 				
-				signedValueTester(roc, i, o, int[][].class);
+				this.signedValueTester(roc, i, o, int[][].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -543,7 +630,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, userData);
 				
-				signedValueTester(roc, i, o, String[][].class, true);
+				this.signedValueTester(roc, i, o, String[][].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -553,13 +640,17 @@ public class RandomOrgClientBasicTest {
 	
 	@Test
 	public void testPositiveGenerateSignedIntegerSequences_4(){
-		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max)
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
+		// 					boolean replacement, int base, JsonObject userData, String ticketId)
+		// -- decimal base
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
-				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX);
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, 
+						userData, ticketId);
 				
-				signedValueTester(roc, i, o, int[][].class);
+				this.signedValueTester(roc, i, o, int[][].class, true, ticketId);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -569,6 +660,42 @@ public class RandomOrgClientBasicTest {
 	
 	@Test
 	public void testPositiveGenerateSignedIntegerSequences_5(){
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
+		// 					boolean replacement, int base, JsonObject userData, String ticketId) 
+		// -- non-decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, 
+						userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, String[][].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_6(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX);
+				
+				this.signedValueTester(roc, i, o, int[][].class);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_7(){
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData)
 		// -- decimal
@@ -579,7 +706,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, decimalBase, userData);
 				
-				signedValueTester(roc, i, o, int[][].class);
+				this.signedValueTester(roc, i, o, int[][].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -588,7 +715,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_6(){
+	public void testPositiveGenerateSignedIntegerSequences_8(){
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData)
 		// -- non-decimal
@@ -598,7 +725,50 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, BASE, userData);
 				
-				signedValueTester(roc, i, o, String[][].class, true);
+				this.signedValueTester(roc, i, o, String[][].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_9(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
+		// -- decimal
+		int[] decimalBase = {10, 10, 10, 10};
+		int i = 1;
+		
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, 
+						MAX, REPLACEMENT, decimalBase, userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, int[][].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_10(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
+		// -- non-decimal
+		int i = 1;
+		
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, 
+						BASE, userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, String[][].class, true, ticketId);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -615,7 +785,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5);
 			
-				signedValueTester(roc, i, o, double[].class);
+				this.signedValueTester(roc, i, o, double[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -631,7 +801,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false);
 			
-				signedValueTester(roc, i, o, double[].class);
+				this.signedValueTester(roc, i, o, double[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -648,7 +818,26 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false, userData);
 				
-				signedValueTester(roc, i, o, double[].class, true);
+				this.signedValueTester(roc, i, o, double[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedDecimalFractions_4(){
+		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, 
+		//				boolean replacement, JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false, 
+						userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, double[].class, true, ticketId);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -664,7 +853,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String, Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4);
 				
-				signedValueTester(roc, i, o, double[].class);
+				this.signedValueTester(roc, i, o, double[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -681,7 +870,26 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String, Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, userData);
 				
-				signedValueTester(roc, i, o, double[].class, true);
+				this.signedValueTester(roc, i, o, double[].class, true);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedGaussians_3(){
+		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, 
+		// 				int significantDigits, JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String, Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, 
+						userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, double[].class, true, ticketId);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -697,7 +905,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd");
 				
-				signedValueTester(roc, i, o, String[].class);
+				this.signedValueTester(roc, i, o, String[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -713,7 +921,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false);
 		
-				signedValueTester(roc, i, o, String[].class);
+				this.signedValueTester(roc, i, o, String[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -729,14 +937,33 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false, userData);
 		
-				signedValueTester(roc, i, o, String[].class, true);
+				this.signedValueTester(roc, i, o, String[].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
 			i++;
 		}
 	}
-
+	
+	@Test
+	public void testPositiveGenerateSignedStrings_4(){
+		// Testing generateSignedStrings(int n, int length, String characters, 
+		//				boolean replacement, JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false, 
+						userData, ticketId);
+		
+				this.signedValueTester(roc, i, o, String[].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
 	@Test
 	public void testPositiveGenerateSignedUUIDs_1(){
 		// Testing generateSignedUUIDs(int n)
@@ -745,7 +972,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedUUIDs(10);
 				
-				signedValueTester(roc, i, o, UUID[].class);
+				this.signedValueTester(roc, i, o, UUID[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -761,14 +988,31 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedUUIDs(10, userData);
 				
-				signedValueTester(roc, i, o, UUID[].class, true);
+				this.signedValueTester(roc, i, o, UUID[].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
 			i++;
 		}
 	}
-
+	
+	@Test
+	public void testPositiveGenerateSignedUUIDs_3(){
+		// Testing generateSignedUUIDs(int n, JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedUUIDs(10, userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, UUID[].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
 	@Test
 	public void testPositiveGenerateSignedBlobs_1(){
 		// Testing generateSignedBlobs(int n, int size)
@@ -777,7 +1021,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16);
 				
-				signedValueTester(roc, i, o, String[].class);
+				this.signedValueTester(roc, i, o, String[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -793,7 +1037,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX);
 				
-				signedValueTester(roc, i, o, String[].class);
+				this.signedValueTester(roc, i, o, String[].class);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -809,7 +1053,7 @@ public class RandomOrgClientBasicTest {
 			try {
 				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, userData);
 				
-				signedValueTester(roc, i, o, String[].class, true);
+				this.signedValueTester(roc, i, o, String[].class, true);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -817,6 +1061,24 @@ public class RandomOrgClientBasicTest {
 		}
 	}
 	
+	@Test
+	public void testPositiveGenerateSignedBlobs_4(){
+		// Testing generateSignedBlobs(int n, int size, String format, JsonObject userData, 
+		//				String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						userData, ticketId);
+				
+				this.signedValueTester(roc, i, o, String[].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
 	// Test additional functions
 	
 	@Test
@@ -831,7 +1093,93 @@ public class RandomOrgClientBasicTest {
 				JsonObject data = ((JsonObject)o2.get("random")).getAsJsonObject();
 				int[] response = new Gson().fromJson(data.get("data"), int[].class);
 				
-				collector.checkThat(Arrays.equals((int[])o.get("data"), response), equalTo(true));	
+				collector.checkThat((int[]) o.get("data"), equalTo(response));	
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testCreateTickets(){
+		// Testing createTickets(int n, boolean showResult)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				JsonObject[] result = roc.createTickets(1, true);				
+				collector.checkThat(result[0], notNullValue());
+				
+				result = roc.createTickets(1, false);				
+				collector.checkThat(result[0], notNullValue());
+				
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testListTickets(){
+		// Testing listTickets(String type) for each type
+		int i = 1;
+		String[] types = {"singleton", "head", "tail"};
+		JsonObject[] tickets = new JsonObject[0];
+		for (RandomOrgClient roc : rocs) {
+			for (String t : types) {
+				try {
+					tickets = roc.listTickets(t);
+					if (tickets != null) {
+						JsonObject ticket = tickets[0];
+						if (t.equals("singleton")) {
+							collector.checkThat(ticket.get("nextTicketId").isJsonNull(), equalTo(true));
+							collector.checkThat(ticket.get("previousTicketId").isJsonNull(), equalTo(true));
+						} else if (t.equals("head")) {
+							collector.checkThat(ticket.get("nextTicketId").isJsonNull(), equalTo(false));
+							collector.checkThat(ticket.get("previousTicketId").isJsonNull(), equalTo(true));
+						} else if (t.equals("tail")) {
+							collector.checkThat(ticket.get("nextTicketId").isJsonNull(), equalTo(true));
+							collector.checkThat(ticket.get("previousTicketId").isJsonNull(), equalTo(false));
+						} else { 
+							collector.addError(new Error("Invalid ticket type. "));
+						}
+					}
+				} catch (Exception e) {
+					collector.addError(new Error(errorMessage(i, e, true)));
+				}
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testGetTicket(){
+		// Testing getTicket(String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticket = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				String hiddenTicket = roc.createTickets(1, false)[0].get("ticketId").getAsString();
+				
+				// unused ticket with showResult == true
+				HashMap<String, Object> o2 = roc.getTicket(ticket);
+				collector.checkThat(((JsonObject) o2.get("result")).get("result").isJsonNull(), equalTo(true));
+				
+				// used ticket with showResult == true
+				HashMap<String, Object> o = roc.generateSignedIntegers(3, 0, 10, false, 10, null, ticket);
+				o2 = roc.getTicket(ticket);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				// unused ticket with showResult == false
+				o2 = roc.getTicket(hiddenTicket);
+				collector.checkThat(((JsonObject) o2.get("result")).get("usedTime").isJsonNull(), equalTo(true));
+				
+				// used ticket with showResult == false
+				roc.generateSignedIntegers(3, 0, 10, false, 10, null, hiddenTicket);
+				o2 = roc.getTicket(hiddenTicket);
+				collector.checkThat(((JsonObject) o2.get("result")).has("result"), equalTo(false));
+				collector.checkThat(((JsonObject) o2.get("result")).get("usedTime").isJsonNull(), equalTo(false));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -1257,7 +1605,7 @@ public class RandomOrgClientBasicTest {
 	 * 
 	 */
 	private void signedValueTester(RandomOrgClient roc, int i, HashMap<String, Object> o, Class<?> cls) {
-		signedValueTester(roc, i, o, cls, false);
+		this.signedValueTester(roc, i, o, cls, false);
 	}
 	
 	/**
@@ -1273,6 +1621,24 @@ public class RandomOrgClientBasicTest {
 	 * 
 	 */
 	private void signedValueTester(RandomOrgClient roc, int i, HashMap<String, Object> o, Class<?> cls, boolean hasUserData) {
+		this.signedValueTester(roc, i, o, cls, hasUserData, null);
+	}
+	
+	/**
+	 *  Helper function for testing methods returning signed values
+	 *  
+	 * @param roc RandomOrgClient instance being used
+	 * @param i index of RandomOrgClient instance in rocs
+	 * @param o HashMap<String, Object> returned from call to a RandomOrgClient method 
+	 * 		  returning signed values
+	 * @param cls Class of the data expected to be returned from the call to the 
+	 * 		  RandomOrgClient method
+	 * @param hasUserData boolean stating whether the request included userData (true) or not (false)
+	 * @param ticketId String returned from a call to {@link org.random.api.RandomOrgClient#createTickets(int n, boolean showResult) 
+	 * 		  createTickets}. {@code null} if none is used.
+	 * 
+	 */
+	private void signedValueTester(RandomOrgClient roc, int i, HashMap<String, Object> o, Class<?> cls, boolean hasUserData, String ticketId) {
 		collector.checkThat(o, notNullValue());
 		
 		collector.checkThat(o.containsKey("data"), equalTo(true));
@@ -1285,6 +1651,15 @@ public class RandomOrgClientBasicTest {
 		
 		if (hasUserData) {
 			collector.checkThat(((JsonObject) o.get("random")).get("userData"), equalTo(userData));
+		}
+		
+		if (ticketId != null) {
+			try {
+				HashMap<String, Object> o2 = roc.getTicket(ticketId);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
 		}
 		
 		try {
