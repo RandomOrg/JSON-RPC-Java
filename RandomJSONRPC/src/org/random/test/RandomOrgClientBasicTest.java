@@ -39,6 +39,8 @@ public class RandomOrgClientBasicTest {
 	private static final int[] BASE = {2, 8, 10, 16};
 	
 	private static JsonObject userData = new JsonObject();
+	private static JsonObject identifier = new JsonObject();
+	private static JsonObject date = new JsonObject();
 	
 	@BeforeClass
 	public static void testSetup() {
@@ -47,6 +49,9 @@ public class RandomOrgClientBasicTest {
 		
 		userData.addProperty("Test", "Text");
 		userData.addProperty("Test2", "Text2");
+		
+		identifier.addProperty("id", "foo");
+		date.addProperty("date", "2020-01-01");
 	}
 	
 	@Test
@@ -282,6 +287,56 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
+	public void testPositiveGenerateInteger_4(){
+		// Testing generateIntgers(int n, in min, int max, boolean replacement, 
+		//				JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				int[] response = roc.generateIntegers(10, 0, 10, false, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				int[] response2 = roc.generateIntegers(10, 0, 10, false, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateIntegers(10, 0, 10, false, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateIntegers(10, 0, 10, false, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateInteger_5(){
+		// Testing generateIntgers(int n, in min, int max, boolean replacement, int base, 
+		// 				JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String[] response = roc.generateIntegers(10, 0, 10, false, 16, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				String[] response2 = roc.generateIntegers(10, 0, 10, false, 16, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateIntegers(10, 0, 10, false, 16, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateIntegers(10, 0, 10, false, 16, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
 	public void testPositiveGenerateIntegerSequences_1(){
 		// Testing generateIntegerSequences(int n, int length, int min, int max)
 		int i = 1;
@@ -325,6 +380,56 @@ public class RandomOrgClientBasicTest {
 	
 	@Test
 	public void testPositiveGenerateIntegerSequences_4(){
+		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement, 
+		//				JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				int[][] response = roc.generateIntegerSequences(3, 5, 0, 10, false, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				int[][] response2 = roc.generateIntegerSequences(3, 5, 0, 10, false, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateIntegerSequences(3, 5, 0, 10, false, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateIntegerSequences(3, 5, 0, 10, false, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_5(){
+		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement, 
+		//				int base, JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String[][] response = roc.generateIntegerSequences(3, 5, 0, 10, false, 16, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				String[][] response2 = roc.generateIntegerSequences(3, 5, 0, 10, false, 16, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateIntegerSequences(3, 5, 0, 10, false, 16, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateIntegerSequences(3, 5, 0, 10, false, 16, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_6(){
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -338,7 +443,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_5(){
+	public void testPositiveGenerateIntegerSequences_7(){
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, 
 		//				int[] max, boolean[] replacement)
 		int i = 1;
@@ -353,13 +458,72 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_6(){
+	public void testPositiveGenerateIntegerSequences_8(){
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, 
 		//				int[] max, boolean[] replacement, int[] base)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				collector.checkThat(roc.generateIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, BASE), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_9(){
+		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//				boolean[] replacement, JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				int[][] response = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				int[][] response2 = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateIntegerSequences_10(){
+		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//				boolean[] replacement, int[] base, JsonObject pregenerateRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String[][] response = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, BASE, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				String[][] response2 = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, BASE, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, BASE, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateIntegerSequences(4, LENGTH, MIN, MAX, 
+						REPLACEMENT, BASE, date);
+				collector.checkThat(response, equalTo(response2));
+				
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -396,13 +560,63 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateGaussians(){
+	public void testPositiveGenerateDecimalFractions_3(){
+		// Testing generateDecimalFractions(int n, int decimalPlaces, boolean replacement, 
+		//				JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				double[] response = roc.generateDecimalFractions(10, 5, false, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				double[] response2 = roc.generateDecimalFractions(10, 5, false, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateDecimalFractions(10, 5, false, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateDecimalFractions(10, 5, false, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateGaussians_1(){
 		// Testing generateGaussians(int n, double mean, double standardDeviation, 
 		// 				double significantDigits)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				collector.checkThat(roc.generateGaussians(10, 3.41d, 2.1d, 4), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++; 
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateGaussians_2(){
+		// Testing generateGaussians(int n, double mean, double standardDeviation, 
+		// 				double significantDigits, JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				double[] response = roc.generateGaussians(10, 3.41d, 2.1d, 4, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				double[] response2 = roc.generateGaussians(10, 3.41d, 2.1d, 4, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateGaussians(10, 3.41d, 2.1d, 4, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateGaussians(10, 3.41d, 2.1d, 4, date);
+				collector.checkThat(response, equalTo(response2));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -440,12 +654,61 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateUUIDs(){
+	public void testPositiveGenerateStrings_3(){
+		// Testing generateStrings(int n, int length, String characters, 
+		// 				boolean replacement, JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String[] response = roc.generateStrings(10, 5, "abcd", false, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				String[] response2 = roc.generateStrings(10, 5, "abcd", false, identifier);
+				collector.checkThat(response, equalTo(response2));
+			
+				response = roc.generateStrings(10, 5, "abcd", false, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateStrings(10, 5, "abcd", false, date);
+				collector.checkThat(response, equalTo(response2));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateUUIDs_1(){
 		// Testing generateUUIDs(int n)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				collector.checkThat(roc.generateUUIDs(10), notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateUUIDs_2(){
+		// Testing generateUUIDs(int n, JsonObject pregeneratedRandomization)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				UUID[] response = roc.generateUUIDs(10, identifier);
+				collector.checkThat(response, notNullValue());
+				
+				UUID[] response2 = roc.generateUUIDs(10, identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateUUIDs(10, date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateUUIDs(10, date);
+				collector.checkThat(response, equalTo(response2));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -475,6 +738,34 @@ public class RandomOrgClientBasicTest {
 			try {
 				collector.checkThat(roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX), 
 						notNullValue());
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateBlobs_3(){
+		// Testing generateBlobs(int n, int size, String format)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String[] response = roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						identifier);
+				collector.checkThat(response, notNullValue());
+				
+				String[] response2 = roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						identifier);
+				collector.checkThat(response, equalTo(response2));
+				
+				response = roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						date);
+				collector.checkThat(response, notNullValue());
+				
+				response2 = roc.generateBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						date);
+				collector.checkThat(response, equalTo(response2));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -587,6 +878,62 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
+	public void testPositiveGenerateSignedInteger_7(){
+		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
+		// 				int base, JsonObject pregeneratedRandomization, JsonObject licenseData,
+		// 				JsonObject userData, String ticketId) 
+		// -- decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 10, identifier, null, 
+						userData, null);
+				
+				this.signedValueTester(roc, i, o, int[].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedIntegers(10, 0, 10, false, 10, identifier, null, 
+						userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedIntegers(10, 0, 10, false, 10, date, null, userData, null);
+				o2 = roc.generateSignedIntegers(10, 0, 10, false, 10, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedInteger_8(){
+		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
+		// 				int base, JsonObject pregeneratedRandomization, JsonObject licensseData, 
+		//				JsonObject userData, String ticketId) 
+		// -- non-decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegers(10, 0, 10, false, 16, identifier, null, 
+						userData, null);
+				
+				this.signedValueTester(roc, i, o, String[].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedIntegers(10, 0, 10, false, 16, identifier, null, 
+						userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedIntegers(10, 0, 10, false, 16, date, null, userData, null);
+				o2 = roc.generateSignedIntegers(10, 0, 10, false, 16, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
 	public void testPositiveGenerateSignedIntegerSequences_1(){
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max)
 		int i = 1;
@@ -639,7 +986,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_4(){
+	public void testPositiveGenerateSignedIntegerSequences_4_decimal(){
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject userData, String ticketId)
 		// -- decimal base
@@ -659,7 +1006,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_5(){
+	public void testPositiveGenerateSignedIntegerSequences_4_nondecimal(){
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject userData, String ticketId) 
 		// -- non-decimal base
@@ -671,6 +1018,62 @@ public class RandomOrgClientBasicTest {
 						userData, ticketId);
 				
 				this.signedValueTester(roc, i, o, String[][].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_5_decimal(){
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
+		// 					boolean replacement, int base, JsonObject pregeneratedRandomization, 
+		//					JsonObject licenseData, JsonObject userData, String ticketId)
+		// -- decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, 
+						identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, int[][].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, 
+						identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, date, null, userData, null);
+				o2 = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 10, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_5_nondecimal(){
+		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
+		// 					boolean replacement, int base, JsonObject pregeneratedRandomization, 
+		//					JsonObject licenseData, JsonObject userData, String ticketId) 
+		// -- non-decimal base
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, 
+						identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, String[][].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, 
+						identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, date, null, userData, null);
+				o2 = roc.generateSignedIntegerSequences(3, 5, 0, 10, false, 16, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -734,7 +1137,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_9(){
+	public void testPositiveGenerateSignedIntegerSequences_9_decimal(){
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
 		// -- decimal
@@ -756,7 +1159,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_10(){
+	public void testPositiveGenerateSignedIntegerSequences_9_nondecimal(){
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
 		// -- non-decimal
@@ -769,6 +1172,68 @@ public class RandomOrgClientBasicTest {
 						BASE, userData, ticketId);
 				
 				this.signedValueTester(roc, i, o, String[][].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_10_decimal(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//					boolean[] replacement, int[] base, JsonObject pregeneratedRandomization, 
+		//					JsonObject licenseData, JsonObject userData, String ticketId)
+		// -- decimal
+		int[] decimalBase = {10, 10, 10, 10};
+		int i = 1;
+		
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, 
+						MAX, REPLACEMENT, decimalBase, identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, int[][].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedIntegerSequences(4, LENGTH, MIN, 
+						MAX, REPLACEMENT, decimalBase, identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, decimalBase, 
+						date, null, userData, null);
+				o2 = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, decimalBase, 
+						date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedIntegerSequences_10_nondecimal(){
+		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
+		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
+		// -- non-decimal
+		int i = 1;
+		
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, 
+						BASE, identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, String[][].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, 
+						BASE, identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, BASE, 
+						date, null, userData, null);
+				o2 = roc.generateSignedIntegerSequences(4, LENGTH, MIN, MAX, REPLACEMENT, BASE, 
+						date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -844,6 +1309,33 @@ public class RandomOrgClientBasicTest {
 			i++;
 		}
 	}
+	
+	@Test
+	public void testPositiveGenerateSignedDecimalFractions_5(){
+		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, 
+		//				boolean replacement, JsonObject pregeneratedRandomization, 
+		//				JsonObject licenseData, JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedDecimalFractions(10, 5, false, 
+						identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, double[].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedDecimalFractions(10, 5, false, 
+						identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedDecimalFractions(10, 5, false, date, null, userData, null);
+				o2 = roc.generateSignedDecimalFractions(10, 5, false, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
 
 	@Test
 	public void testPositiveGenerateSignedGaussians_1(){
@@ -890,6 +1382,33 @@ public class RandomOrgClientBasicTest {
 						userData, ticketId);
 				
 				this.signedValueTester(roc, i, o, double[].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedGaussians_4(){
+		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, 
+		// 				int significantDigits, JsonObject pregeneratedRandomization, JsonObject licenseData, 
+		//				JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String, Object> o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, 
+						identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, double[].class, true);
+				
+				HashMap<String, Object> o2 = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, 
+						identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, date, null, userData, null);
+				o2 = roc.generateSignedGaussians(10, 3.41d, 2.1d, 4, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -965,6 +1484,33 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
+	public void testPositiveGenerateSignedStrings_5(){
+		// Testing generateSignedStrings(int n, int length, String characters, 
+		//				boolean replacement, JsonObject pregeneratedRandomization, 
+		//				JsonObject licenseData,JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedStrings(10, 5, "abcd", false, 
+						identifier, null, userData, null);
+		
+				this.signedValueTester(roc, i, o, String[].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedStrings(10, 5, "abcd", false, 
+						identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedStrings(10, 5, "abcd", false, date, null, userData, null);
+				o2 = roc.generateSignedStrings(10, 5, "abcd", false, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
 	public void testPositiveGenerateSignedUUIDs_1(){
 		// Testing generateSignedUUIDs(int n)
 		int i = 1;
@@ -1006,6 +1552,30 @@ public class RandomOrgClientBasicTest {
 				HashMap<String,Object> o = roc.generateSignedUUIDs(10, userData, ticketId);
 				
 				this.signedValueTester(roc, i, o, UUID[].class, true, ticketId);
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testPositiveGenerateSignedUUIDs_4(){
+		// Testing generateSignedUUIDs(int n, JsonObject pregeneratedRandomization, 
+		//				JsonObject licenseData, JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedUUIDs(10, identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, UUID[].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedUUIDs(10, identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedUUIDs(10, date, null, userData, null);
+				o2 = roc.generateSignedUUIDs(10, date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e, true)));
 			}
@@ -1079,6 +1649,36 @@ public class RandomOrgClientBasicTest {
 			i++;
 		}
 	}
+	
+	@Test
+	public void testPositiveGenerateSignedBlobs_5(){
+		// Testing generateSignedBlobs(int n, int size, String format, 
+		//				JsonObject pregeneratedRandomization, JsonObject licenseData, 
+		//				JsonObject userData, String ticketId)
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				HashMap<String,Object> o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						identifier, null, userData, null);
+				
+				this.signedValueTester(roc, i, o, String[].class, true);
+				
+				HashMap<String,Object> o2 = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						identifier, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+				
+				o = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						date, null, userData, null);
+				o2 = roc.generateSignedBlobs(10, 16, RandomOrgClient.BLOB_FORMAT_HEX, 
+						date, null, userData, null);
+				collector.checkThat(o.get("data"), equalTo(o2.get("data")));
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e, true)));
+			}
+			i++;
+		}
+	}
+	
 	// Test additional functions
 	
 	@Test
@@ -1130,7 +1730,7 @@ public class RandomOrgClientBasicTest {
 			for (String t : types) {
 				try {
 					tickets = roc.listTickets(t);
-					if (tickets != null) {
+					if (tickets != null && tickets.length > 0) {
 						JsonObject ticket = tickets[0];
 						if (t.equals("singleton")) {
 							collector.checkThat(ticket.get("nextTicketId").isJsonNull(), equalTo(true));
@@ -1249,7 +1849,7 @@ public class RandomOrgClientBasicTest {
 		//				int base, int cacheSize)
 		RandomOrgCache<String[]> c = rocs[0].createIntegerCache(5, 50, 100, false, 16, 5);
 		c.stop();
-
+		
 		try {
 			c.get();
 			collector.addError(new Error("should have thrown NoSuchElementException"));
@@ -1635,7 +2235,7 @@ public class RandomOrgClientBasicTest {
 	 * 		  RandomOrgClient method
 	 * @param hasUserData boolean stating whether the request included userData (true) or not (false)
 	 * @param ticketId String returned from a call to {@link org.random.api.RandomOrgClient#createTickets(int n, boolean showResult) 
-	 * 		  createTickets}. {@code null} if none is used.
+	 *        createTickets}. {@code null} if none is used.
 	 * 
 	 */
 	private void signedValueTester(RandomOrgClient roc, int i, HashMap<String, Object> o, Class<?> cls, boolean hasUserData, String ticketId) {

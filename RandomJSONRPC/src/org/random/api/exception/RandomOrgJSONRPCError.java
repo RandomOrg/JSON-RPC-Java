@@ -4,7 +4,7 @@ package org.random.api.exception;
  * Exception raised by the RandomOrgClient class when the server
  * returns a JSON-RPC Error.
  *
- * @see https://api.random.org/json-rpc/2/error-codes
+ * @see https://api.random.org/json-rpc/4/error-codes
  */
 public class RandomOrgJSONRPCError extends RuntimeException {
 

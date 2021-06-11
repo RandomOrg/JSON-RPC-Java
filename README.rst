@@ -1,9 +1,9 @@
 JSON-RPC-Java
 ===============
 
-RANDOM.ORG JSON-RPC API (Release 3) implementation.
+RANDOM.ORG JSON-RPC API (Release 4) implementation.
 
-This is a Java implementation of the RANDOM.ORG JSON-RPC API (R3). It provides either serialized or unserialized access to both the signed and unsigned methods of the API through the RandomOrgClient class. It also provides a convenience class through the RandomOrgClient class, the RandomOrgCache, for precaching requests. In the context of this module, a serialized client is one for which the sequence of requests matches the sequence of responses.
+This is a Java implementation of the RANDOM.ORG JSON-RPC API (R4). It provides either serialized or unserialized access to both the signed and unsigned methods of the API through the RandomOrgClient class. It also provides a convenience class through the RandomOrgClient class, the RandomOrgCache, for precaching requests. In the context of this module, a serialized client is one for which the sequence of requests matches the sequence of responses.
 
 Installation
 ------------
@@ -86,7 +86,7 @@ This library now also includes a RANDOM.ORG implementation of the `java.util.Ran
 Documentation
 -------------
 
-For a full list of available randomness generation functions and other features see RandomOrgClient.java documentation and https://api.random.org/json-rpc/3
+For a full list of available randomness generation functions and other features see RandomOrgClient.java documentation and https://api.random.org/json-rpc/4
 
 Tests
 -----
