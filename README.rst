@@ -83,6 +83,10 @@ This library now also includes a RANDOM.ORG implementation of the `java.util.Ran
 	
 	6
 
+Signature Verification
+----------------------
+There are two additional methods to generate signature verification URLs and HTML forms (*createURL* and *createHTML*) using the random object and signature returned from any of the signed (value generating) methods. The generated URLs and HTML forms link to the same web page that is also shown when a result is verified using the online `Signature Verification Form <https://api.random.org/signatures/form>`_.
+
 Documentation
 -------------
 
