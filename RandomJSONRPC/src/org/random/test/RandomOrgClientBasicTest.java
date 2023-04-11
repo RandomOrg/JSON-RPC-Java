@@ -1,6 +1,7 @@
 package org.random.test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -81,7 +82,7 @@ public class RandomOrgClientBasicTest {
 	
 	
 	@Test
-	public void testPositiveGetBitsLeft(){
+	public void testPositiveGetBitsLeft() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
@@ -98,14 +99,14 @@ public class RandomOrgClientBasicTest {
 	// Test Errors
 	
 	@Test
-	public void testNegativeErrorMessage202(){
+	public void testNegativeErrorMessage202() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateIntegers(100000, 0, 10);
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 202);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -114,14 +115,14 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testNegativeErrorMessage203(){
+	public void testNegativeErrorMessage203() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateIntegerSequences(3, LENGTH, MIN, MAX);
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 203);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -130,14 +131,14 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testNegativeErrorMessage204(){
+	public void testNegativeErrorMessage204() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateIntegerSequences(4, new int[] {1}, MIN, MAX);
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 204);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -146,14 +147,14 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testNegativeErrorMessage300(){
+	public void testNegativeErrorMessage300() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateIntegers(10, 10, 0);
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 300);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -162,14 +163,14 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testNegativeErrorMessage301(){
+	public void testNegativeErrorMessage301() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateIntegers(20, 0, 10, false);
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 301);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -178,27 +179,27 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testNegativeErrorMessage400(){
-		try{
+	public void testNegativeErrorMessage400() {
+		try {
 			RandomOrgClient rpc2 = RandomOrgClient.getRandomOrgClient("ffffffff-ffff-ffff-ffff-ffffffffffff");
 			rpc2.generateIntegers(1, 0, 1);
 			collector.addError(new Error(errorMessage()));
 		} catch(RandomOrgRANDOMORGError e) {
-			System.out.println(e.getMessage());
+			negativeErrorHandler(e, 400);
 		} catch (Exception e) {
 			collector.addError(new Error(errorMessage(e)));
 		}
 	}
 	
 	@Test
-	public void testNegativeErrorMessage420(){
+	public void testNegativeErrorMessage420() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateSignedIntegers(5, 0, 10, false, 10, null, "ffffffffffffffff");
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 420);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -207,14 +208,14 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testNegativeErrorMessage421(){
+	public void testNegativeErrorMessage421() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
 				roc.generateSignedIntegers(5, 0, 10, false, 10, null, "d5b8f6d03f99a134");
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 421);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -223,7 +224,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testNegativeErrorMessage422(){
+	public void testNegativeErrorMessage422() {
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
 			try {
@@ -234,7 +235,25 @@ public class RandomOrgClientBasicTest {
 				
 				collector.addError(new Error(errorMessage(i)));
 			} catch(RandomOrgRANDOMORGError e) {
-				System.out.println(e.getMessage());
+				negativeErrorHandler(e, 422);				
+			} catch (Exception e) {
+				collector.addError(new Error(errorMessage(i, e)));
+			}
+			i++;
+		}
+	}
+	
+	@Test
+	public void testNegativeErrorMessage426() {
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			try {
+				String ticketId = roc.createTickets(1, true)[0].get("ticketId").getAsString();
+				roc.revealTickets(ticketId);
+				
+				collector.addError(new Error(errorMessage(i)));
+			} catch(RandomOrgRANDOMORGError e) {
+				negativeErrorHandler(e, 426);
 			} catch (Exception e) {
 				collector.addError(new Error(errorMessage(i, e)));
 			}
@@ -243,9 +262,9 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	// Test Functions
-
+	
 	@Test
-	public void testPositiveGenerateInteger_1(){
+	public void testPositiveGenerateInteger_1() {
 		// Testing generateIntgers(int n, in min, int max)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -259,7 +278,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateInteger_2(){
+	public void testPositiveGenerateInteger_2() {
 		// Testing generateIntgers(int n, in min, int max, boolean replacement)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -273,7 +292,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateInteger_3(){
+	public void testPositiveGenerateInteger_3() {
 		// Testing generateIntgers(int n, in min, int max, boolean replacement, int base)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -287,7 +306,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateInteger_4(){
+	public void testPositiveGenerateInteger_4() {
 		// Testing generateIntgers(int n, in min, int max, boolean replacement, 
 		//				JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -312,7 +331,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateInteger_5(){
+	public void testPositiveGenerateInteger_5() {
 		// Testing generateIntgers(int n, in min, int max, boolean replacement, int base, 
 		// 				JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -337,7 +356,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_1(){
+	public void testPositiveGenerateIntegerSequences_1() {
 		// Testing generateIntegerSequences(int n, int length, int min, int max)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -351,7 +370,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_2(){
+	public void testPositiveGenerateIntegerSequences_2() {
 		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -365,7 +384,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_3(){
+	public void testPositiveGenerateIntegerSequences_3() {
 		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement, int base)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -379,7 +398,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_4(){
+	public void testPositiveGenerateIntegerSequences_4() {
 		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement, 
 		//				JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -404,7 +423,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_5(){
+	public void testPositiveGenerateIntegerSequences_5() {
 		// Testing generateIntegerSequences(int n, int length, int min, int max, boolean replacement, 
 		//				int base, JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -429,7 +448,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_6(){
+	public void testPositiveGenerateIntegerSequences_6() {
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -443,7 +462,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_7(){
+	public void testPositiveGenerateIntegerSequences_7() {
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, 
 		//				int[] max, boolean[] replacement)
 		int i = 1;
@@ -458,7 +477,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_8(){
+	public void testPositiveGenerateIntegerSequences_8() {
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, 
 		//				int[] max, boolean[] replacement, int[] base)
 		int i = 1;
@@ -473,7 +492,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_9(){
+	public void testPositiveGenerateIntegerSequences_9() {
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//				boolean[] replacement, JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -502,7 +521,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateIntegerSequences_10(){
+	public void testPositiveGenerateIntegerSequences_10() {
 		// Testing generateIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//				boolean[] replacement, int[] base, JsonObject pregenerateRandomization)
 		int i = 1;
@@ -532,7 +551,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateDecimalFractions_1(){
+	public void testPositiveGenerateDecimalFractions_1() {
 		// Testing generateDecimalFractions(int n, int decimalPlaces)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -546,7 +565,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateDecimalFractions_2(){
+	public void testPositiveGenerateDecimalFractions_2() {
 		// Testing generateDecimalFractions(int n, int decimalPlaces, boolean replacement)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -560,7 +579,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateDecimalFractions_3(){
+	public void testPositiveGenerateDecimalFractions_3() {
 		// Testing generateDecimalFractions(int n, int decimalPlaces, boolean replacement, 
 		//				JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -585,7 +604,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateGaussians_1(){
+	public void testPositiveGenerateGaussians_1() {
 		// Testing generateGaussians(int n, double mean, double standardDeviation, 
 		// 				double significantDigits)
 		int i = 1;
@@ -600,7 +619,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateGaussians_2(){
+	public void testPositiveGenerateGaussians_2() {
 		// Testing generateGaussians(int n, double mean, double standardDeviation, 
 		// 				double significantDigits, JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -625,7 +644,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateStrings_1(){
+	public void testPositiveGenerateStrings_1() {
 		// Testing generateStrings(int n, int length, String characters)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -639,7 +658,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateStrings_2(){
+	public void testPositiveGenerateStrings_2() {
 		// Testing generateStrings(int n, int length, String characters, 
 		// 				boolean replacement)
 		int i = 1;
@@ -654,7 +673,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateStrings_3(){
+	public void testPositiveGenerateStrings_3() {
 		// Testing generateStrings(int n, int length, String characters, 
 		// 				boolean replacement, JsonObject pregeneratedRandomization)
 		int i = 1;
@@ -679,7 +698,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateUUIDs_1(){
+	public void testPositiveGenerateUUIDs_1() {
 		// Testing generateUUIDs(int n)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -693,7 +712,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateUUIDs_2(){
+	public void testPositiveGenerateUUIDs_2() {
 		// Testing generateUUIDs(int n, JsonObject pregeneratedRandomization)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -717,7 +736,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateBlobs_1(){
+	public void testPositiveGenerateBlobs_1() {
 		// Testing generateBlobs(int n, int size)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -731,7 +750,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateBlobs_2(){
+	public void testPositiveGenerateBlobs_2() {
 		// Testing generateBlobs(int n, int size, String format)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -746,7 +765,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateBlobs_3(){
+	public void testPositiveGenerateBlobs_3() {
 		// Testing generateBlobs(int n, int size, String format)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -792,7 +811,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_2(){
+	public void testPositiveGenerateSignedInteger_2() {
 		// Testing generateSignedStrings(int n, int min, int max, boolean replacement)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -808,7 +827,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_3(){
+	public void testPositiveGenerateSignedInteger_3() {
 		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
 		// 				int base, JsonObject userData) -- decimal base
 		int i = 1;
@@ -825,7 +844,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_4(){
+	public void testPositiveGenerateSignedInteger_4() {
 		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
 		// 				int base, JsonObject userData) -- non-decimal base
 		int i = 1;
@@ -842,7 +861,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_5(){
+	public void testPositiveGenerateSignedInteger_5() {
 		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
 		// 				int base, JsonObject userData, String ticketId) -- decimal base
 		int i = 1;
@@ -860,7 +879,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_6(){
+	public void testPositiveGenerateSignedInteger_6() {
 		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
 		// 				int base, JsonObject userData, String ticketId) -- non-decimal base
 		int i = 1;
@@ -878,7 +897,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_7(){
+	public void testPositiveGenerateSignedInteger_7() {
 		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
 		// 				int base, JsonObject pregeneratedRandomization, JsonObject licenseData,
 		// 				JsonObject userData, String ticketId) 
@@ -906,7 +925,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedInteger_8(){
+	public void testPositiveGenerateSignedInteger_8() {
 		// Testing generateSignedIntegers(int n, int min, int max, boolean replacement, 
 		// 				int base, JsonObject pregeneratedRandomization, JsonObject licensseData, 
 		//				JsonObject userData, String ticketId) 
@@ -934,7 +953,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_1(){
+	public void testPositiveGenerateSignedIntegerSequences_1() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -950,7 +969,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_2(){
+	public void testPositiveGenerateSignedIntegerSequences_2() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject userData)
 		// -- decimal base
@@ -968,7 +987,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_3(){
+	public void testPositiveGenerateSignedIntegerSequences_3() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject userData) 
 		// -- non-decimal base
@@ -986,7 +1005,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_4_decimal(){
+	public void testPositiveGenerateSignedIntegerSequences_4_decimal() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject userData, String ticketId)
 		// -- decimal base
@@ -1006,7 +1025,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_4_nondecimal(){
+	public void testPositiveGenerateSignedIntegerSequences_4_nondecimal() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject userData, String ticketId) 
 		// -- non-decimal base
@@ -1026,7 +1045,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_5_decimal(){
+	public void testPositiveGenerateSignedIntegerSequences_5_decimal() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject pregeneratedRandomization, 
 		//					JsonObject licenseData, JsonObject userData, String ticketId)
@@ -1054,7 +1073,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_5_nondecimal(){
+	public void testPositiveGenerateSignedIntegerSequences_5_nondecimal() {
 		// Testing generateSignedIntegerSequences(int n, int length, int min, int max, 
 		// 					boolean replacement, int base, JsonObject pregeneratedRandomization, 
 		//					JsonObject licenseData, JsonObject userData, String ticketId) 
@@ -1082,7 +1101,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_6(){
+	public void testPositiveGenerateSignedIntegerSequences_6() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1098,7 +1117,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_7(){
+	public void testPositiveGenerateSignedIntegerSequences_7() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData)
 		// -- decimal
@@ -1118,7 +1137,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_8(){
+	public void testPositiveGenerateSignedIntegerSequences_8() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData)
 		// -- non-decimal
@@ -1137,7 +1156,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_9_decimal(){
+	public void testPositiveGenerateSignedIntegerSequences_9_decimal() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
 		// -- decimal
@@ -1159,7 +1178,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_9_nondecimal(){
+	public void testPositiveGenerateSignedIntegerSequences_9_nondecimal() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
 		// -- non-decimal
@@ -1180,7 +1199,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_10_decimal(){
+	public void testPositiveGenerateSignedIntegerSequences_10_decimal() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject pregeneratedRandomization, 
 		//					JsonObject licenseData, JsonObject userData, String ticketId)
@@ -1212,7 +1231,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedIntegerSequences_10_nondecimal(){
+	public void testPositiveGenerateSignedIntegerSequences_10_nondecimal() {
 		// Testing generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, 
 		//					boolean[] replacement, int[] base, JsonObject userData, String ticketId)
 		// -- non-decimal
@@ -1242,7 +1261,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedDecimalFractions_1(){
+	public void testPositiveGenerateSignedDecimalFractions_1() {
 		// Testing generateSignedDecimalFractions(int n, int decimalPlaces)
 		int i = 1;
 		
@@ -1259,7 +1278,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateSignedDecimalFractions_2(){
+	public void testPositiveGenerateSignedDecimalFractions_2() {
 		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1275,7 +1294,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedDecimalFractions_3(){
+	public void testPositiveGenerateSignedDecimalFractions_3() {
 		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, 
 		//				boolean replacement, JsonObject userData)
 		int i = 1;
@@ -1292,7 +1311,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedDecimalFractions_4(){
+	public void testPositiveGenerateSignedDecimalFractions_4() {
 		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, 
 		//				boolean replacement, JsonObject userData, String ticketId)
 		int i = 1;
@@ -1311,7 +1330,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedDecimalFractions_5(){
+	public void testPositiveGenerateSignedDecimalFractions_5() {
 		// Testing generateSignedDecimalFractions(int n, int decimalPlaces, 
 		//				boolean replacement, JsonObject pregeneratedRandomization, 
 		//				JsonObject licenseData, JsonObject userData, String ticketId)
@@ -1338,7 +1357,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateSignedGaussians_1(){
+	public void testPositiveGenerateSignedGaussians_1() {
 		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1354,7 +1373,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedGaussians_2(){
+	public void testPositiveGenerateSignedGaussians_2() {
 		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, 
 		// 				int significantDigits, JsonObject userData)
 		int i = 1;
@@ -1371,7 +1390,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedGaussians_3(){
+	public void testPositiveGenerateSignedGaussians_3() {
 		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, 
 		// 				int significantDigits, JsonObject userData, String ticketId)
 		int i = 1;
@@ -1390,7 +1409,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedGaussians_4(){
+	public void testPositiveGenerateSignedGaussians_4() {
 		// Testing generateSignedGaussians(int n, double mean, double standardDeviation, 
 		// 				int significantDigits, JsonObject pregeneratedRandomization, JsonObject licenseData, 
 		//				JsonObject userData, String ticketId)
@@ -1417,7 +1436,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateSignedStrings_1(){
+	public void testPositiveGenerateSignedStrings_1() {
 		// Testing generateSignedStrings(int n, int length, String characters)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1433,7 +1452,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateSignedStrings_2(){
+	public void testPositiveGenerateSignedStrings_2() {
 		// Testing generateSignedStrings(int n, int length, String characters, boolean replacement)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1448,7 +1467,7 @@ public class RandomOrgClientBasicTest {
 		}
 	}
 	
-	public void testPositiveGenerateSignedStrings_3(){
+	public void testPositiveGenerateSignedStrings_3() {
 		// Testing generateSignedStrings(int n, int length, String characters, 
 		//				boolean replacement, JsonObject userData)
 		int i = 1;
@@ -1465,7 +1484,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedStrings_4(){
+	public void testPositiveGenerateSignedStrings_4() {
 		// Testing generateSignedStrings(int n, int length, String characters, 
 		//				boolean replacement, JsonObject userData, String ticketId)
 		int i = 1;
@@ -1484,7 +1503,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedStrings_5(){
+	public void testPositiveGenerateSignedStrings_5() {
 		// Testing generateSignedStrings(int n, int length, String characters, 
 		//				boolean replacement, JsonObject pregeneratedRandomization, 
 		//				JsonObject licenseData,JsonObject userData, String ticketId)
@@ -1511,7 +1530,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedUUIDs_1(){
+	public void testPositiveGenerateSignedUUIDs_1() {
 		// Testing generateSignedUUIDs(int n)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1527,7 +1546,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedUUIDs_2(){
+	public void testPositiveGenerateSignedUUIDs_2() {
 		// Testing generateSignedUUIDs(int n, JsonObject userData)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1543,7 +1562,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedUUIDs_3(){
+	public void testPositiveGenerateSignedUUIDs_3() {
 		// Testing generateSignedUUIDs(int n, JsonObject userData, String ticketId)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1560,7 +1579,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedUUIDs_4(){
+	public void testPositiveGenerateSignedUUIDs_4() {
 		// Testing generateSignedUUIDs(int n, JsonObject pregeneratedRandomization, 
 		//				JsonObject licenseData, JsonObject userData, String ticketId)
 		int i = 1;
@@ -1584,7 +1603,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedBlobs_1(){
+	public void testPositiveGenerateSignedBlobs_1() {
 		// Testing generateSignedBlobs(int n, int size)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1600,7 +1619,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testPositiveGenerateSignedBlobs_2(){
+	public void testPositiveGenerateSignedBlobs_2() {
 		// Testing generateSignedBlobs(int n, int size, String format)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1616,7 +1635,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedBlobs_3(){
+	public void testPositiveGenerateSignedBlobs_3() {
 		// Testing generateSignedBlobs(int n, int size, String format, JsonObject userData)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1632,7 +1651,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedBlobs_4(){
+	public void testPositiveGenerateSignedBlobs_4() {
 		// Testing generateSignedBlobs(int n, int size, String format, JsonObject userData, 
 		//				String ticketId)
 		int i = 1;
@@ -1651,7 +1670,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testPositiveGenerateSignedBlobs_5(){
+	public void testPositiveGenerateSignedBlobs_5() {
 		// Testing generateSignedBlobs(int n, int size, String format, 
 		//				JsonObject pregeneratedRandomization, JsonObject licenseData, 
 		//				JsonObject userData, String ticketId)
@@ -1682,7 +1701,7 @@ public class RandomOrgClientBasicTest {
 	// Test additional functions
 	
 	@Test
-	public void testGetResult(){
+	public void testGetResult() {
 		// Testing getResult(int serialNumber)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1702,7 +1721,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testCreateTickets(){
+	public void testCreateTickets() {
 		// Testing createTickets(int n, boolean showResult)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1721,7 +1740,29 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testListTickets(){
+	public void testRevealTicketsSingle() {
+		// Testing revealTickets(String ticketId) - using and revealing
+		// a single ticket.
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			revealTicket(roc, i, 1);
+			i++;
+		}
+	}
+	
+	@Test
+	public void testRevealTicketsMultiple() {
+		// Testing revealTickets(String ticketId) - using and revealing
+		// a chain of tickets.
+		int i = 1;
+		for (RandomOrgClient roc : rocs) {
+			revealTicket(roc, i, 3);
+			i++;
+		}
+	}
+	
+	@Test
+	public void testListTickets() {
 		// Testing listTickets(String type) for each type
 		int i = 1;
 		String[] types = {"singleton", "head", "tail"};
@@ -1754,7 +1795,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testGetTicket(){
+	public void testGetTicket() {
 		// Testing getTicket(String ticketId)
 		int i = 1;
 		for (RandomOrgClient roc : rocs) {
@@ -1790,7 +1831,7 @@ public class RandomOrgClientBasicTest {
 	// Test Functions (Cache)
 	
 	@Test
-	public void testIntegerCache_1(){
+	public void testIntegerCache_1() {
 		// Testing createIntegerCache(int n, int min, int max)
 		RandomOrgCache<int[]> c = rocs[0].createIntegerCache(5, 0, 10);
 		c.stop();
@@ -1844,7 +1885,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testIntegerCache_2(){
+	public void testIntegerCache_2() {
 		// Testing createIntegerCache(int n, int min, int max, boolean replacement, 
 		//				int base, int cacheSize)
 		RandomOrgCache<String[]> c = rocs[0].createIntegerCache(5, 50, 100, false, 16, 5);
@@ -1877,7 +1918,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testIntegerSequenceCache_1(){
+	public void testIntegerSequenceCache_1() {
 		// Testing createIntegerSequenceCache(int n, int length int min, int max)
 		RandomOrgCache<int[][]> c = rocs[0].createIntegerSequenceCache(2, 5, 0, 10);
 		c.stop();
@@ -1907,7 +1948,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testIntegerSequenceCache_2(){
+	public void testIntegerSequenceCache_2() {
 		// Testing createIntegerSequenceCache(int n, int length int min, int max, 
 		//				boolean replacement, int base, int cacheSize)
 		RandomOrgCache<String[][]> c = rocs[0].createIntegerSequenceCache(2, 5, 0, 10, false, 16, 3);
@@ -1938,7 +1979,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testIntegerSequenceCache_3(){
+	public void testIntegerSequenceCache_3() {
 		// Testing createIntegerSequenceCache(int n, int[] length, int[] min, int[] max)
 		RandomOrgCache<int[][]> c = rocs[0].createIntegerSequenceCache(4, LENGTH, MIN, MAX);
 		c.stop();
@@ -1968,7 +2009,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testIntegerSequenceCache_4(){
+	public void testIntegerSequenceCache_4() {
 		// Testing createIntegerSequenceCache(int n, int[] length, int[] min, int[] max, 
 		// 				boolean[] replacement, int[] base, int cacheSize)
 		boolean[] replacement = {true, true, true, true};
@@ -2004,7 +2045,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testDecimalFractionCache(){
+	public void testDecimalFractionCache() {
 		// Testing createDecimalFractionCache(int n, int decimalPlaces)
 		RandomOrgCache<double[]> c = rocs[1].createDecimalFractionCache(1, 5);
 		c.stop();
@@ -2034,7 +2075,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testGaussianCache(){
+	public void testGaussianCache() {
 		// Testing createGaussianCache(int n, double mean, double standardDeviation, 
 		// 				int significantDigits) 
 		RandomOrgCache<double[]> c = rocs[0].createGaussianCache(10, 3.41d, 2.1d, 4);
@@ -2065,7 +2106,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testStringCache(){
+	public void testStringCache() {
 		// Testing createStringCache(int n, int length, String characters)
 		RandomOrgCache<String[]> c = rocs[1].createStringCache(5, 5, "abcds");
 		c.stop();
@@ -2095,7 +2136,7 @@ public class RandomOrgClientBasicTest {
 	}
 
 	@Test
-	public void testUUIDCache(){
+	public void testUUIDCache() {
 		// Testing createUUIDCache(int n)
 		RandomOrgCache<UUID[]> c = rocs[0].createUUIDCache(5);
 		c.stop();
@@ -2125,7 +2166,7 @@ public class RandomOrgClientBasicTest {
 	}
 	
 	@Test
-	public void testBlobCache(){
+	public void testBlobCache() {
 		// Testing createBlobCache(int n, int size)
 		RandomOrgCache<String[]> c = rocs[1].createBlobCache(5, 8);
 		c.stop();
@@ -2190,6 +2231,20 @@ public class RandomOrgClientBasicTest {
 				s += ", instead threw "	+ e.getClass().getName();
 			}
 			return s;
+		}
+	}
+	
+	/**
+	 *  Helper function to check if the RandomOrgRANDOMORGError thrown
+	 *  is the expected error.
+	 *  
+	 *  @param e RandomOrgRANDOMORGError thrown in the test.
+	 *  @param expectedErrorCode The code of the expected RandomOrgRANDOMORGError.
+	 */
+	private void negativeErrorHandler(RandomOrgRANDOMORGError e, int expectedErrorCode) {
+		if (e.getCode() != expectedErrorCode) {
+			collector.addError(new Error("Should have thrown RandomOrgRANDOMORGError "
+					+ expectedErrorCode + ", instead threw: " + e.getMessage()));
 		}
 	}
 	
@@ -2267,6 +2322,60 @@ public class RandomOrgClientBasicTest {
 					(String)o.get("signature")), equalTo(true));
 		} catch (Exception e) {
 			collector.addError(new Error(errorMessage(i, e, true)));
+		}
+	}
+	
+	/**
+	 * Helper function to test revealing tickets.
+	 * 
+	 * @param roc RandomOrgClient instance being used.
+	 * @param rocIndex index of RandomOrgClient instance in rocs
+	 * @param n The number of tickets to use.
+	 */
+	private void revealTicket(RandomOrgClient roc, int rocIndex, int n) {
+		try {
+			String lastTicket = "";
+			
+			Map<String, HashMap<String, Object>> results = new HashMap<String,
+					HashMap<String, Object>>();
+			
+			JsonObject ticket = roc.createTickets(1, false)[0];
+			String ticketId = ticket.get("ticketId").getAsString();
+			
+			
+			for (int i = 0; i < n; i++) {
+				// Use the ticket to generate integers.
+				HashMap<String, Object> result = roc.generateSignedIntegers(5, 0, 10, false, 10, null, ticketId);
+				
+				// Check that the generated data is not visible pre-reveal.
+				HashMap<String, Object> get = roc.getTicket(ticketId);
+				collector.checkThat(get.get("data"), nullValue());
+				
+				// Update last ticket (which will be revealed) and results.
+				lastTicket = ticketId;
+				results.put(ticketId, result);
+				
+				// Get the next ticket.
+				ticketId = ((JsonObject) roc.getTicket(ticketId).get("result")).get("nextTicketId").toString();
+				ticketId = ticketId.replaceAll("\"", "");
+			}
+			
+			// Reveal the last ticket, which also automatically reveals
+			// all other tickets used (predecessors).
+			int ticketCount = roc.revealTickets(lastTicket);
+			collector.checkThat(ticketCount, is(n));
+			
+			for(Map.Entry<String, HashMap<String, Object>> entry : results.entrySet()) {
+				String id = entry.getKey();
+				HashMap<String, Object> result = entry.getValue();
+				
+				// Check that the results are now available for each revealed ticket
+				// and that they are the correct results.
+				HashMap<String, Object> get = roc.getTicket(id);
+				collector.checkThat(result.get("data"), equalTo(get.get("data")));
+			}
+		} catch (Exception e) {
+			collector.addError(new Error(errorMessage(rocIndex, e, true)));
 		}
 	}
 }

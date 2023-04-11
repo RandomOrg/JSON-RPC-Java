@@ -80,6 +80,7 @@ public class RandomOrgClient {
 	private static final String SIGNED_BLOB_METHOD				= "generateSignedBlobs";
 	private static final String GET_RESULT_METHOD               = "getResult";
 	private static final String CREATE_TICKET_METHOD			= "createTickets";
+	private static final String REVEAL_TICKETS_METHOD           = "revealTickets";
 	private static final String LIST_TICKET_METHOD				= "listTickets";
 	private static final String GET_TICKET_METHOD				= "getTicket";
 	private static final String VERIFY_SIGNATURE_METHOD			= "verifySignature";
@@ -116,7 +117,7 @@ public class RandomOrgClient {
 	private static HashSet<Integer> randomOrgErrors = new HashSet<Integer>();
 	static {
 		int[] ints = {100, 101, 200, 201, 202, 203, 204, 300, 301, 302, 303, 304, 305, 306, 307, 
-				400, 401, 402, 403, 404, 405, 420, 421, 422, 423, 424, 425, 500, 32000};
+				400, 401, 402, 403, 404, 405, 420, 421, 422, 423, 424, 425, 426, 500, 32000};
 		for (int i : ints) {
 			RandomOrgClient.randomOrgErrors.add(i);
 		}
@@ -155,7 +156,8 @@ public class RandomOrgClient {
 	 * New instance will have a blockingTimeout of 24*60*60*1000 milliseconds, i.e., 1 day, 
 	 * a httpTimeout of 120*1000 milliseconds, and will issue serialized requests.
 	 *
-	 * @param apiKey of instance to create/find, obtained from RANDOM.ORG, see: https://api.random.org/api-keys
+	 * @param apiKey of instance to create/find, obtained from RANDOM.ORG, <a
+	 *        href="https://api.random.org/api-keys">see here</a>.
 	 * 
 	 * @return new instance if instance doesn't already exist for this key, else existing instance.
 	 */
@@ -168,7 +170,8 @@ public class RandomOrgClient {
 	 * Ensure only one instance of RandomOrgClient exists per API key. Create a new instance 
 	 * if the supplied key isn't already known, otherwise return the previously instantiated one.
 	 *
-	 * @param apiKey of instance to create/find, obtained from RANDOM.ORG, see: https://api.random.org/api-keys
+	 * @param apiKey of instance to create/find, obtained from RANDOM.ORG, <a
+	 *        href="https://api.random.org/api-keys">see here</a>.
 	 * @param blockingTimeout maximum time in milliseconds to wait before being allowed to send 
 	 *        a request. Note this is a hint not a guarantee. Be advised advisory delay from server 
 	 *        must always be obeyed. Supply a value of -1 to allow blocking forever 
@@ -196,7 +199,8 @@ public class RandomOrgClient {
 	 * Constructor. Initialize class and start serialized request sending Thread running as 
 	 * a daemon if applicable.
 	 *
-	 * @param apiKey of instance to create/find, obtained from RANDOM.ORG, see: https://api.random.org/api-keys
+	 * @param apiKey of instance to create/find, obtained from RANDOM.ORG, <a
+	 *        href="https://api.random.org/api-keys">see here</a>.
 	 * @param blockingTimeout maximum time in milliseconds to wait before being allowed to 
 	 *        send a request. Note this is a hint not a guarantee. Be advised advisory delay 
 	 *        from server must always be obeyed. Supply a value of -1 to allow blocking forever 
@@ -238,8 +242,7 @@ public class RandomOrgClient {
 	// Basic methods for generating randomness, see: https://api.random.org/json-rpc/4/basic
 	
 	/**
-	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegers
+	 * Request and return an array of true random integers within a user-defined range from the server.
 	 *
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -261,6 +264,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegers">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegers</a>
 	 */
 	public int[] generateIntegers(int n, int min, int max) 
 			throws RandomOrgSendTimeoutException, 
@@ -276,9 +281,8 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegers
-	 *
+	 * Request and return an array of true random integers within a user-defined range from the server.
+	 * 
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
 	 *        Must be within the [-1e9,1e9] range.
@@ -302,6 +306,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegers">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegers</a>
 	 */
 	public int[] generateIntegers(int n, int min, int max, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -317,9 +323,8 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegers
-	 *
+	 * Request and return an array of true random integers within a user-defined range from the server.
+	 *      
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
 	 *        Must be within the [-1e9,1e9] range.
@@ -347,6 +352,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegers">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegers</a>
 	 */
 	public String[] generateIntegers(int n, int min, int max, boolean replacement, int base) 
 			throws RandomOrgSendTimeoutException, 
@@ -362,9 +369,8 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegers
-	 *
+	 * Request and return an array of true random integers within a user-defined range from the server.
+	 * 
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
 	 *        Must be within the [-1e9,1e9] range.
@@ -400,6 +406,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegers">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegers</a>
 	 */
 	public int[] generateIntegers(int n, int min, int max, boolean replacement, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -416,8 +424,7 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return an array of true random integers within a user-defined range from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegers
+	 * Request and return an array of true random integers within a user-defined range from the server.
 	 *
 	 * @param n the number of random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -458,6 +465,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegers">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegers</a>
 	 */
 	public String[] generateIntegers(int n, int min, int max, boolean replacement, int base, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -476,9 +485,8 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
-	 *
+	 * from the server.
+	 *      
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
 	 *        [1,1e4] range. 
@@ -501,6 +509,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */	
 	public int[][] generateIntegerSequences(int n, int length, int min, int max) 
 			throws RandomOrgSendTimeoutException, 
@@ -517,8 +527,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -545,6 +554,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */	
 	public int[][] generateIntegerSequences(int n, int length, int min, int max, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -562,8 +573,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -595,6 +605,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */	
 	public String[][] generateIntegerSequences(int n, int length, int min, int max, boolean replacement, int base) 
 			throws RandomOrgSendTimeoutException, 
@@ -612,8 +624,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -652,6 +663,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */	
 	public int[][] generateIntegerSequences(int n, int length, int min, int max, boolean replacement, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -670,8 +683,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined ranges 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -715,6 +727,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */	
 	public String[][] generateIntegerSequences(int n, int length, int min, int max, boolean replacement, int base, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -733,8 +747,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * ranges from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -758,6 +771,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */	
 	public int[][] generateIntegerSequences(int n, int[] length, int[] min, int[] max) 
 			throws RandomOrgSendTimeoutException, 
@@ -777,8 +792,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * ranges from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -806,6 +820,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */
 	public int[][] generateIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -823,8 +839,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * ranges from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -857,6 +872,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */
 	public String[][] generateIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base) 
 			throws RandomOrgSendTimeoutException, 
@@ -874,8 +891,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * ranges from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -915,6 +931,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */
 	public int[][] generateIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -936,8 +954,7 @@ public class RandomOrgClient {
 
 	/**
 	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateIntegerSequences
+	 * ranges from the server.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the sequence 
@@ -982,6 +999,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/basic#generateIntegerSequences</a>
 	 */
 	public String[][] generateIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -1001,8 +1020,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of true random decimal fractions, from a uniform 
 	 * distribution across the [0,1] interval with a user-defined number of decimal places 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateDecimalFractions
+	 * from the server.
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -1021,6 +1039,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/basic#generateDecimalFractions</a>
 	 */
 	public double[] generateDecimalFractions(int n, int decimalPlaces) 
 			throws RandomOrgSendTimeoutException, 
@@ -1038,8 +1058,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of true random decimal fractions, from a uniform 
 	 * distribution across the [0,1] interval with a user-defined number of decimal places 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateDecimalFractions
+	 * from the server.
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -1061,6 +1080,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/basic#generateDecimalFractions</a>
 	 */
 	public double[] generateDecimalFractions(int n, int decimalPlaces, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -1078,9 +1099,8 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of true random decimal fractions, from a uniform 
 	 * distribution across the [0,1] interval with a user-defined number of decimal places 
-	 * from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateDecimalFractions
-	 *
+	 * from the server.
+	 * 
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
 	 * @param replacement specifies whether the random numbers should be picked with replacement. 
@@ -1113,6 +1133,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/basic#generateDecimalFractions</a>
 	 */
 	public double[] generateDecimalFractions(int n, int decimalPlaces, boolean replacement, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -1141,8 +1163,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of true random numbers from a Gaussian distribution 
 	 * (also known as a normal distribution). The form uses a Box-Muller Transform to generate 
-	 * the Gaussian distribution from uniformly distributed numbers. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateGaussians
+	 * the Gaussian distribution from uniformly distributed numbers.
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -1165,6 +1186,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateGaussians">
+	 *      https://api.random.org/json-rpc/4/basic#generateDecimalGaussians</a>
 	 */
 	public double[] generateGaussians(int n, double mean, double standardDeviation, int significantDigits) 
 			throws RandomOrgSendTimeoutException, 
@@ -1183,8 +1206,7 @@ public class RandomOrgClient {
 	/**
 	 * Request and return a list (size n) of true random numbers from a Gaussian distribution 
 	 * (also known as a normal distribution). The form uses a Box-Muller Transform to generate 
-	 * the Gaussian distribution from uniformly distributed numbers. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateGaussians
+	 * the Gaussian distribution from uniformly distributed numbers.
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -1219,6 +1241,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateGaussians">
+	 *      https://api.random.org/json-rpc/4/basic#generateDecimalGaussians</a>
 	 */
 	public double[] generateGaussians(int n, double mean, double standardDeviation, int significantDigits, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -1246,8 +1270,7 @@ public class RandomOrgClient {
 	}
 
 	/**
-	 * Request and return a list (size n) of true random unicode strings from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateStrings
+	 * Request and return a list (size n) of true random unicode strings from the server.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -1269,6 +1292,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateStrings">
+	 *      https://api.random.org/json-rpc/4/basic#generateStrings</a>
 	 */
 	public String[] generateStrings(int n, int length, String characters) 
 			throws RandomOrgSendTimeoutException, 
@@ -1284,8 +1309,7 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return a list (size n) of true random unicode strings from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateStrings
+	 * Request and return a list (size n) of true random unicode strings from the server.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -1310,6 +1334,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateStrings">
+	 *      https://api.random.org/json-rpc/4/basic#generateStrings</a>
 	 */
 	public String[] generateStrings(int n, int length, String characters, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -1325,8 +1351,7 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return a list (size n) of true random unicode strings from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateStrings
+	 * Request and return a list (size n) of true random unicode strings from the server.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -1363,6 +1388,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateStrings">
+	 *      https://api.random.org/json-rpc/4/basic#generateStrings</a>
 	 */
 	public String[] generateStrings(int n, int length, String characters, boolean replacement, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -1391,8 +1418,7 @@ public class RandomOrgClient {
 
 	/**
 	 * Request and return a list (size n) of version 4 true random Universally Unique IDentifiers 
-	 * (UUIDs) in accordance with section 4.4 of RFC 4122, from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateUUIDs
+	 * (UUIDs) in accordance with section 4.4 of RFC 4122, from the server.
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 *
@@ -1410,6 +1436,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateUUIDs">
+	 *      https://api.random.org/json-rpc/4/basic#generateUUIDs</a>
 	 */
 	public UUID[] generateUUIDs(int n) 
 			throws RandomOrgSendTimeoutException, 
@@ -1426,8 +1454,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return a list (size n) of version 4 true random Universally Unique IDentifiers 
-	 * (UUIDs) in accordance with section 4.4 of RFC 4122, from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateUUIDs
+	 * (UUIDs) in accordance with section 4.4 of RFC 4122, from the server.
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 * @param pregeneratedRandomization A JsonObject which allows the client to specify that the 
@@ -1457,6 +1484,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateUUIDs">
+	 *      https://api.random.org/json-rpc/4/basic#generateUUIDs</a>
 	 */
 	public UUID[] generateUUIDs(int n, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -1482,8 +1511,7 @@ public class RandomOrgClient {
 
 	/**
 	 * Request and return a list (size n) of Binary Large OBjects (BLOBs) as unicode strings 
-	 * containing true random data from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateBlobs
+	 * containing true random data from the server.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] range 
@@ -1503,6 +1531,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateBlobs">
+	 *      https://api.random.org/json-rpc/4/basic#generateBlobs</a>
 	 */
 	public String[] generateBlobs(int n, int size) 
 			throws RandomOrgSendTimeoutException, 
@@ -1519,8 +1549,7 @@ public class RandomOrgClient {
 
 	/**
 	 * Request and return a list (size n) of Binary Large OBjects (BLOBs) as unicode strings 
-	 * containing true random data from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateBlobs
+	 * containing true random data from the server.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] range 
@@ -1542,6 +1571,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateBlobs">
+	 *      https://api.random.org/json-rpc/4/basic#generateBlobs</a>
 	 */
 	public String[] generateBlobs(int n, int size, String format) 
 			throws RandomOrgSendTimeoutException, 
@@ -1558,8 +1589,7 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return a list (size n) of Binary Large OBjects (BLOBs) as unicode strings 
-	 * containing true random data from the server. 
-	 * See: https://api.random.org/json-rpc/4/basic#generateBlobs
+	 * containing true random data from the server.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] range 
@@ -1593,6 +1623,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/basic#generateBlobs">
+	 *      https://api.random.org/json-rpc/4/basic#generateBlobs</a>
 	 */
 	public String[] generateBlobs(int n, int size, String format, JsonObject pregeneratedRandomization) 
 			throws RandomOrgSendTimeoutException, 
@@ -1623,8 +1655,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
-	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedIntegers
+	 * response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1648,6 +1679,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegers">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegers</a>
 	 */
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max) 
 			throws RandomOrgSendTimeoutException, 
@@ -1665,8 +1698,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
-	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedIntegers
+	 * response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1693,6 +1725,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegers">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegers</a>
 	 */
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -1710,8 +1744,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
-	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedIntegers
+	 * response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1743,6 +1776,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegers">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegers</a>
 	 */
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max, boolean replacement, int base, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -1760,8 +1795,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
-	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedIntegers
+	 * response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
@@ -1797,6 +1831,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegers">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegers</a>
 	 */
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max, boolean replacement, int base, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -1815,9 +1851,8 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random integers within a user-defined range from the server. 
 	 * Returns a dictionary object with the parsed integer list mapped to 'data', the original 
-	 * response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedIntegers
-	 *
+	 * response mapped to 'random', and the response's signature mapped to 'signature'.
+	 * 
 	 * @param n how many random integers you need. Must be within the [1,1e4] range.
 	 * @param min the lower boundary for the range from which the random numbers will be picked. 
 	 *        Must be within the [-1e9,1e9] range.
@@ -1871,6 +1906,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegers">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegers</a>
 	 */
 	public HashMap<String, Object> generateSignedIntegers(int n, int min, int max, boolean replacement, int base, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -1896,9 +1933,9 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array
+	 * mapped to 'data', the original response mapped to 'random', and the response's
+	 * signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -1924,6 +1961,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int length, int min, int max) 
 			throws RandomOrgSendTimeoutException, 
@@ -1941,9 +1980,9 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array
+	 * mapped to 'data', the original response mapped to 'random', and the response's
+	 * signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -1977,6 +2016,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int length, int min, int max, boolean replacement, int base, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -1994,9 +2035,9 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array
+	 * mapped to 'data', the original response mapped to 'random', and the response's
+	 * signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -2034,6 +2075,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int length, int min, int max, boolean replacement, int base, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2051,9 +2094,9 @@ public class RandomOrgClient {
 	
 	/**
 	 * Request and return uniform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array
+	 * mapped to 'data', the original response mapped to 'random', and the response's
+	 * signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -2110,6 +2153,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int length, int min, int max, boolean replacement, int base, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2135,10 +2180,10 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * Request and return uniform or multiform sequences of true random integers within
+	 * user-defined ranges from the server. Returns a dictionary object with the parsed
+	 * 2D integer array mapped to 'data', the original response mapped to 'random', and
+	 * the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length the length of each array of random integers requested. Must be within the 
@@ -2164,6 +2209,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */		
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max) 
 			throws RandomOrgSendTimeoutException, 
@@ -2185,10 +2232,10 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * Request and return uniform or multiform sequences of true random integers within
+	 * user-defined ranges from the server. Returns a dictionary object with the parsed
+	 * 2D integer array mapped to 'data', the original response mapped to 'random', and
+	 * the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the 
@@ -2228,6 +2275,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -2244,11 +2293,11 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
-	 *
+	 * Request and return uniform or multiform sequences of true random integers within
+	 * user-defined ranges from the server. Returns a dictionary object with the parsed
+	 * 2D integer array mapped to 'data', the original response mapped to 'random', and
+	 * the response's signature mapped to 'signature'.
+	 * 
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the 
 	 * 		  sequence identified by its index. Each value in the array must 
@@ -2291,6 +2340,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2307,10 +2358,10 @@ public class RandomOrgClient {
 	}
 	
 	/**
-	 * Request and return uniform or multiform sequences of true random integers within user-defined 
-	 * ranges from the server. Returns a dictionary object with the parsed 2D integer array mapped to 
-	 * 'data', the original response mapped to 'random', and the response's signature mapped to 'signature'.
-	 * See: https://api.random.org/json-rpc/4/signed#generateIntegerSequences
+	 * Request and return uniform or multiform sequences of true random integers within
+	 * user-defined ranges from the server. Returns a dictionary object with the parsed
+	 * 2D integer array mapped to 'data', the original response mapped to 'random', and
+	 * the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many arrays of random integers you need. Must be within the [1,1e3] range.
 	 * @param length an array with n integers each specifying the length of the 
@@ -2373,6 +2424,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedIntegerSequences</a>
 	 */	
 	public HashMap<String, Object> generateSignedIntegerSequences(int n, int[] length, int[] min, int[] max, boolean[] replacement, int[] base, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2404,8 +2457,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random decimal fractions, from a uniform distribution 
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
-	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions
+	 * original response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -2425,6 +2477,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions</a>
 	 */
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces) 
 			throws RandomOrgSendTimeoutException, 
@@ -2443,9 +2497,8 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random decimal fractions, from a uniform distribution 
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
-	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions
-	 *
+	 * original response mapped to 'random', and the response's signature mapped to 'signature'.
+	 * 
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
 	 * @param replacement specifies whether the random numbers should be picked with replacement. 
@@ -2467,6 +2520,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions</a>
 	 */
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -2485,8 +2540,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random decimal fractions, from a uniform distribution 
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
-	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions
+	 * original response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -2511,6 +2565,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions</a>
 	 */
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -2529,8 +2585,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random decimal fractions, from a uniform distribution 
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
-	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions
+	 * original response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -2559,6 +2614,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions</a>
 	 */
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2578,8 +2635,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of true random decimal fractions, from a uniform distribution 
 	 * across the [0,1] interval with a  user-defined number of decimal places from the server. 
 	 * Returns a dictionary object with the parsed decimal fraction list mapped to 'data', the 
-	 * original response mapped to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions
+	 * original response mapped to 'random', and the response's signature mapped to 'signature'.
 	 *
 	 * @param n how many random decimal fractions you need. Must be within the [1,1e4] range.
 	 * @param decimalPlaces the number of decimal places to use. Must be within the [1,20] range.
@@ -2627,6 +2683,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedDecimalFractions</a>
 	 */
 	public HashMap<String, Object> generateSignedDecimalFractions(int n, int decimalPlaces, boolean replacement, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2663,8 +2721,7 @@ public class RandomOrgClient {
 	 * as a normal distribution). The form uses a Box-Muller Transform to generate the Gaussian 
 	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
 	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
-	 * and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedGaussians
+	 * and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -2688,6 +2745,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedGaussians">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedGaussians</a>
 	 */
 	public HashMap<String, Object> generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits) 
 			throws RandomOrgSendTimeoutException, 
@@ -2708,8 +2767,7 @@ public class RandomOrgClient {
 	 * as a normal distribution). The form uses a Box-Muller Transform to generate the Gaussian 
 	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
 	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
-	 * and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedGaussians
+	 * and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -2735,6 +2793,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedGaussians">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedGaussians</a>
 	 */
 	public HashMap<String, Object> generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -2755,8 +2815,7 @@ public class RandomOrgClient {
 	 * as a normal distribution). The form uses a Box-Muller Transform to generate the Gaussian 
 	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
 	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
-	 * and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedGaussians
+	 * and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -2786,6 +2845,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedGaussians">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedGaussians</a>
 	 */
 	public HashMap<String, Object> generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2806,8 +2867,7 @@ public class RandomOrgClient {
 	 * as a normal distribution). The form uses a Box-Muller Transform to generate the Gaussian 
 	 * distribution from uniformly distributed numbers. Returns a dictionary object with the 
 	 * parsed random number list mapped to 'data', the original response mapped to 'random', 
-	 * and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedGaussians
+	 * and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random numbers you need. Must be within the [1,1e4] range.
 	 * @param mean the distribution's mean. Must be within the [-1e6,1e6] range.
@@ -2856,6 +2916,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedGaussians">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedGaussians</a>
 	 */
 	public HashMap<String, Object> generateSignedGaussians(int n, double mean, double standardDeviation, int significantDigits, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -2891,8 +2953,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedStrings
+	 * to 'random', and the response's signature mapped to 'signature'.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -2915,6 +2976,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedStrings">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedStrings</a>
 	 */
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters) 
 			throws RandomOrgSendTimeoutException, 
@@ -2932,8 +2995,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data',the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedStrings
+	 * to 'random', and the response's signature mapped to 'signature'.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -2959,6 +3021,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedStrings">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedStrings</a>
 	 */
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement) 
 			throws RandomOrgSendTimeoutException, 
@@ -2976,8 +3040,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedStrings
+	 * to 'random', and the response's signature mapped to 'signature'.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -3005,6 +3068,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedStrings">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedStrings</a>
 	 */
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement, JsonObject userData) 
 			throws RandomOrgSendTimeoutException,
@@ -3022,8 +3087,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedStrings
+	 * to 'random', and the response's signature mapped to 'signature'.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -3055,6 +3119,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedStrings">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedStrings</a>
 	 */
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException,
@@ -3073,8 +3139,7 @@ public class RandomOrgClient {
 	/**
 	 * Request a list (size n) of true random strings from the server. Returns a dictionary 
 	 * object with the parsed random string list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedStrings
+	 * to 'random', and the response's signature mapped to 'signature'.
      *
 	 * @param n how many random strings you need. Must be within the [1,1e4] range.
 	 * @param length the length of each string. Must be within the [1,20] range. All strings 
@@ -3125,6 +3190,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedStrings">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedStrings</a>
 	 */
 	public HashMap<String, Object> generateSignedStrings(int n, int length, String characters, boolean replacement, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException,
@@ -3161,8 +3228,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of version 4 true random Universally Unique IDentifiers (UUIDs) 
 	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
 	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedUUIDs
+	 * to 'random', and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 *
@@ -3181,6 +3247,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedUUIDs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedUUIDs</a>
 	 */
 	public HashMap<String, Object> generateSignedUUIDs(int n) 
 			throws RandomOrgSendTimeoutException, 
@@ -3199,8 +3267,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of version 4 true random Universally Unique IDentifiers (UUIDs) 
 	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
 	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedUUIDs
+	 * to 'random', and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
@@ -3221,6 +3288,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedUUIDs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedUUIDs</a>
 	 */
 	public HashMap<String, Object> generateSignedUUIDs(int n, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -3239,8 +3308,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of version 4 true random Universally Unique IDentifiers (UUIDs) 
 	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
 	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedUUIDs
+	 * to 'random', and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 * @param userData JsonObject that will be included in unmodified form. Its maximum size 
@@ -3265,6 +3333,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedUUIDs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedUUIDs</a>
 	 */
 	public HashMap<String, Object> generateSignedUUIDs(int n, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -3284,8 +3354,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of version 4 true random Universally Unique IDentifiers (UUIDs) 
 	 * in accordance with section 4.4 of RFC 4122, from the server. Returns a dictionary 
 	 * object with the parsed random UUID list mapped to 'data', the original response mapped 
-	 * to 'random', and the response's signature mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedUUIDs
+	 * to 'random', and the response's signature mapped to 'signature'.
      * 
 	 * @param n how many random UUIDs you need. Must be within the [1,1e3] range.
 	 * @param pregeneratedRandomization A JsonObject which allows the client to specify that the 
@@ -3329,6 +3398,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedUUIDs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedUUIDs</a>
 	 */
 	public HashMap<String, Object> generateSignedUUIDs(int n, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -3362,8 +3433,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of Binary Large OBjects (BLOBs) containing true random data 
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
-	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedBlobs 
+	 * mapped to 'signature'.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -3384,6 +3454,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedBlobs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedBlobs</a>
 	 */
 	public HashMap<String, Object> generateSignedBlobs(int n, int size) 
 			throws RandomOrgSendTimeoutException, 
@@ -3402,8 +3474,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of Binary Large OBjects (BLOBs) containing true random data 
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
-	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedBlobs 
+	 * mapped to 'signature'.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -3426,6 +3497,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedBlobs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedBlobs</a>
 	 */
 	public HashMap<String, Object> generateSignedBlobs(int n, int size, String format) 
 			throws RandomOrgSendTimeoutException, 
@@ -3444,8 +3517,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of Binary Large OBjects (BLOBs) containing true random data 
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
-	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedBlobs 
+	 * mapped to 'signature'.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -3470,6 +3542,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedBlobs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedBlobs</a>
 	 */
 	public HashMap<String, Object> generateSignedBlobs(int n, int size, String format, JsonObject userData) 
 			throws RandomOrgSendTimeoutException, 
@@ -3488,8 +3562,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of Binary Large OBjects (BLOBs) containing true random data 
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
-	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedBlobs 
+	 * mapped to 'signature'.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -3518,6 +3591,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedBlobs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedBlobs</a>
 	 */
 	public HashMap<String, Object> generateSignedBlobs(int n, int size, String format, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -3537,8 +3612,7 @@ public class RandomOrgClient {
 	 * Request a list (size n) of Binary Large OBjects (BLOBs) containing true random data 
 	 * from the server. Returns a dictionary object with the parsed random BLOB list mapped 
 	 * to 'data', the original response mapped to 'random', and the response's signature 
-	 * mapped to 'signature'. 
-	 * See: https://api.random.org/json-rpc/4/signed#generateSignedBlobs 
+	 * mapped to 'signature'.
      * 
 	 * @param n how many random blobs you need. Must be within the [1,100] range.
 	 * @param size the size of each blob, measured in bits. Must be within the [1,1048576] 
@@ -3586,6 +3660,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#generateSignedBlobs">
+	 *      https://api.random.org/json-rpc/4/signed#generateSignedBlobs</a>
 	 */
 	public HashMap<String, Object> generateSignedBlobs(int n, int size, String format, JsonObject pregeneratedRandomization, JsonObject licenseData, JsonObject userData, String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -3623,8 +3699,7 @@ public class RandomOrgClient {
 	/**
 	 * Retrieve signed random values generated within the last 24h, using a serial number. 
 	 * If the historical response was found, a response with the result property containing 
-	 * the same values that were returned by the method that was used to generate the values. 
-	 * See: https://api.random.org/json-rpc/4/signed#getResult
+	 * the same values that were returned by the method that was used to generate the values.
      * 
 	 * @param serialNumber an integer containing the serial number associated with the response 
 	 *        you wish to retrieve.
@@ -3643,6 +3718,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#getResult">
+	 *      https://api.random.org/json-rpc/4/signed#getResult</a>
 	 */
 	public HashMap<String, Object> getResult(int serialNumber) 
 			throws RandomOrgSendTimeoutException, 
@@ -3670,8 +3747,7 @@ public class RandomOrgClient {
 	// Ticket methods 
 	
 	/**
-	 * Create n tickets to be used in signed value-generating methods. 
-	 * See: https://api.random.org/json-rpc/4/signed#createTickets
+	 * Create n tickets to be used in signed value-generating methods.
 	 * 
 	 * @param n The number of tickets requested. This must be a number in the [1, 50] range.
 	 * @param showResult A boolean value that determines how much information calls to {@link 
@@ -3694,6 +3770,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#createTickets">
+	 *      https://api.random.org/json-rpc/4/signed#createTickets</a>
 	 */
 	public JsonObject[] createTickets(int n, boolean showResult) 
 			throws RandomOrgSendTimeoutException, 
@@ -3719,9 +3797,67 @@ public class RandomOrgClient {
 	}
 	
 	/**
+	 * This method marks a specific ticket and all its predecessors in its chain as
+	 * being revealed, meaning that subsequent calls to {@link #getTicket(String ticketId) 
+	 * getTicket} will return the full details of the tickets, including the random
+	 * values produced when the tickets were used. Using this method effectively
+	 * changes the value of {@code showResult} (which was specified when the first
+	 * ticket in the chain was created using {@link #createTickets(int n, boolean showResult)
+	 * createTicket}) from {@code false} to {@code true}. The reason that not only
+	 * the ticket specified (but also its predecessors in its chain) are revealed
+	 * is to ensure maximum transparency. This method does not affect any successors
+	 * to the ticket in the chain.
+	 * <p>
+	 * If this method is used on a ticket that has not yet been used, a RandomOrgRANDOMORGError
+	 * (426) will be thrown.
+	 * 
+	 * @param ticketId A string value that uniquely identifies the ticket.
+	 *        
+	 * @return int A number value that specifies how many tickets were revealed. This
+	 *         will include the ticket specified as well as all its predecessors. If
+	 *         this method is invoked on a ticket that is already revealed (or which
+	 *         was created with {@code howResult} set to {@code true}), then the value
+	 *         returned will be zero.
+	 * 
+	 * @throws RandomOrgSendTimeoutException blocking timeout is exceeded before the request 
+	 *         can be sent. 
+	 * @throws RandomOrgKeyNotRunningError API key has been stopped.
+	 * @throws RandomOrgInsufficientRequestsError API key's server requests allowance has 
+	 *         been exceeded.
+	 * @throws RandomOrgInsufficientBitsError API key's server bits allowance has been exceeded.
+	 * @throws RandomOrgBadHTTPResponseException if a HTTP 200 OK response not received.
+	 * @throws RandomOrgRANDOMORGError server returns a RANDOM.ORG Error.
+	 * @throws RandomOrgJSONRPCError server returns a JSON-RPC Error.
+	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
+	 *         creation. @see java.net.MalformedURLException
+	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#revealTickets">
+	 *      https://api.random.org/json-rpc/4/signed#revealTickets</a>
+	 */
+	public int revealTickets(String ticketId) 
+			throws RandomOrgSendTimeoutException, 
+			       RandomOrgKeyNotRunningError, 
+			       RandomOrgInsufficientRequestsError, 
+			       RandomOrgInsufficientBitsError, 
+			       RandomOrgBadHTTPResponseException, 
+			       RandomOrgRANDOMORGError, 
+			       RandomOrgJSONRPCError, 
+			       MalformedURLException, 
+			       IOException {
+		JsonObject request = new JsonObject();
+		
+		request.addProperty("ticketId", ticketId);
+		
+		request = this.generateKeyedRequest(request, REVEAL_TICKETS_METHOD);
+		
+		JsonObject response = this.sendRequest(request);
+		
+		return this.extractTicketCount(response);
+	}
+	
+	/**
 	 * Obtain information about tickets linked with your API key. The maximum number of tickets 
-	 * that can be returned by this method is 2000. 
-	 * See: https://api.random.org/json-rpc/4/signed#listTickets
+	 * that can be returned by this method is 2000.
 	 * 
 	 * @param ticketType A string describing the type of tickets you want to obtain information 
 	 *        about. Possible values are {@code singleton, head} and {@code tail}. 
@@ -3747,6 +3883,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#listTickets">
+	 *      https://api.random.org/json-rpc/4/signed#listTickets</a>
 	 */
 	public JsonObject[] listTickets(String ticketType) 
 			throws RandomOrgSendTimeoutException, 
@@ -3773,8 +3911,7 @@ public class RandomOrgClient {
 	/**
 	 * Obtain information about a single ticket using the {@code ticketId} associated with it. 
 	 * If the ticket has {@code showResult} set to true and has been used, this method will return the 
-	 * values generated. 
-	 * See:https://api.random.org/json-rpc/4/signed#getTicket
+	 * values generated.
 	 * 
 	 * @param ticketId A string containing a ticket identifier returned by a prior call to the 
 	 *        {@link #createTickets(int n, boolean showResult) createTicket} method.
@@ -3805,6 +3942,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#getTicket">
+	 *      https://api.random.org/json-rpc/4/signed#getTicket</a>
 	 */
 	public HashMap<String, Object> getTicket(String ticketId) 
 			throws RandomOrgSendTimeoutException, 
@@ -3893,8 +4032,7 @@ public class RandomOrgClient {
 	/**
 	 * Verify the signature of a response previously received from one of the methods in 
 	 * the Signed API with the server. This is used to examine the authenticity of numbers. 
-	 * Return True on verification success. 
-	 * See: https://api.random.org/json-rpc/4/signed#verifySignature
+	 * Return True on verification success.
      * 
 	 * @param random the random field from a response returned by RANDOM.ORG through one of 
 	 *        the Signed API methods.
@@ -3915,6 +4053,8 @@ public class RandomOrgClient {
 	 * @throws MalformedURLException in the unlikely event something goes wrong with URL 
 	 *         creation. @see java.net.MalformedURLException
 	 * @throws IOException @see java.io.IOException
+	 * @see <a href="https://api.random.org/json-rpc/4/signed#verifySignature">
+	 *      https://api.random.org/json-rpc/4/signed#verifySignature</a>
 	 */
 	public boolean verifySignature(JsonObject random, String signature) 
 			throws RandomOrgSendTimeoutException, 
@@ -3944,13 +4084,16 @@ public class RandomOrgClient {
 	 * accessible from this URL will contain the details of the response used in this
 	 * method, provided that the signature can be verified. This URL is also shown
 	 * under "Show Technical Details" when the online Signature Verification Form is
-	 * used to validate a signature. See: https://api.random.org/signatures/form
+	 * used to validate a signature.
+	 * 
 	 * @param random the random field from a response returned by RANDOM.ORG through one of 
 	 *        the Signed API methods.
 	 * @param signature the signature field from the same response that the random field 
 	 *        originates from.
 	 * @return String containing the signature verification URL
 	 * @throws RandomOrgRANDOMORGError when the URL is too long (max. 2,046 characters)
+	 * @see <a href="https://api.random.org/signatures/form">
+	 *      https://api.random.org/signatures/form</a>
 	 */
 	public String createURL(JsonObject random, String signature) throws RandomOrgRANDOMORGError {
 		String formattedRandom = formatURL(random.toString());
@@ -3975,12 +4118,14 @@ public class RandomOrgClient {
 	 * response used in this method, provided that the signature can be verified. The
 	 * same HTML form is also shown under "Show Technical Details" when the online
 	 * Signature Verification Form is used to validate a signature.
-	 * See: https://api.random.org/signatures/form
+	 * 
 	 * @param random the random field from a response returned by RANDOM.ORG through
 	 *        one of the Signed API methods.
 	 * @param signature the signature field from the same response that the random
 	 *        field originates from.
 	 * @return string containing the code for the HTML form
+	 * @see <a href="https://api.random.org/signatures/form">
+	 *      https://api.random.org/signatures/form</a>
 	 */	
 	public String createHTML(JsonObject random, String signature) {
 		String s = "<form action='https://api.random.org/signatures/form' method='post'>\n";
@@ -5244,6 +5389,17 @@ public class RandomOrgClient {
 	private boolean extractVerificationResponse(JsonObject response) {
 		return response.get("result").getAsJsonObject().get("authenticity").getAsBoolean();
 	}
+	
+	/**
+	 * Gets the response from the revealTickets method, i.e., the number
+	 * of tickets that were revealed.
+	 * 
+	 * @param response JSON from which to extract the revealTicket response.
+	 * @return the number of tickets revealed.
+	 */
+	private int extractTicketCount(JsonObject response) {
+		return response.get("result").getAsJsonObject().get("ticketCount").getAsInt();
+	}
 
 	/** 
 	 * Send request as determined by serialized boolean.
@@ -5646,7 +5802,7 @@ public class RandomOrgClient {
 			// https://api.random.org/json-rpc/4/error-codes
 			} else if (RandomOrgClient.randomOrgErrors.contains(code)) {
 				ret.put("exception", new RandomOrgRANDOMORGError("Error " + code 
-						+ ": " + message));
+						+ ": " + message, code));
 				return ret;
 				
 			// RandomOrgJSONRPCError from JSON-RPC Errors: 
